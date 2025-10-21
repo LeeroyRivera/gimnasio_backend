@@ -2,7 +2,16 @@ const express = require('express');
 const morgan = require('morgan');
 require('dotenv').config();
 
+const db = require('./src/config/database');
+
 const app = express();
+
+db.sync({ alter: true }).then(() => {
+  console.log('Database connected successfully.');
+}).catch((error) => {
+  console.error('Unable to connect to the database:', error);
+});
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
