@@ -35,7 +35,7 @@ require('./src/models/asistente_virtual/progreso_cliente');
 
 const app = express();
 
-db.sync({ alter: true }).then(() => {
+db.sync({}).then(() => {
   console.log('Database connected successfully.');
 }).catch((error) => {
   console.error('Unable to connect to the database:', error);
@@ -53,5 +53,10 @@ app.listen(app.get('port'), () => {
 app.get('/', (req, res) => {
   res.status(200).json({ message: 'Gym API' });
 });
+
+//app.use('/api/usuarios', require('./src/routes/usuarios/rutasUsuario'));
+
+const Usuario = require('./src/controllers/usuarios/controladorUsuario');
+app.post('/api/usuario-test', Usuario.guardarUsuario);
 
 module.exports = app;

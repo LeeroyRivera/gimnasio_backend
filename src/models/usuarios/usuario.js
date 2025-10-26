@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
+const argon2 = require('argon2');
 
 const Usuario = sequelize.define('Usuario', {
   id_usuario: {
@@ -62,6 +63,12 @@ const Usuario = sequelize.define('Usuario', {
 }, {
   tableName: 'usuarios',
   timestamps: false
+});
+
+Usuario.beforeCreate(async (usuario) => {
+  if (usuario.password_hash) {
+    usuario.password_hash = await argon2.hash(usuario.password_hash);
+  }
 });
 
 module.exports = Usuario;
