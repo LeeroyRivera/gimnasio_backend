@@ -4,6 +4,35 @@ require('dotenv').config();
 
 const db = require('./src/config/database');
 
+// Importar modelos de usuarios
+require('./src/models/usuarios/rol');
+require('./src/models/usuarios/usuario');
+require('./src/models/usuarios/usuario_rol');
+require('./src/models/usuarios/cliente');
+require('./src/models/usuarios/personal');
+require('./src/models/usuarios/sesion');
+
+// Importar modelos de pagos
+require('./src/models/pagos/plan_membresia');
+require('./src/models/pagos/membresia');
+require('./src/models/pagos/pago');
+
+// Importar modelos de control de acceso
+require('./src/models/control_acceso/asistencia');
+require('./src/models/control_acceso/codigo_qr_acceso');
+
+// Importar modelos de inventario
+require('./src/models/inventario/categoria_equipo');
+require('./src/models/inventario/equipo');
+require('./src/models/inventario/mantenimiento');
+
+// Importar modelos de asistente virtual
+require('./src/models/asistente_virtual/categoria_ejercicio');
+require('./src/models/asistente_virtual/ejercicio');
+require('./src/models/asistente_virtual/rutina');
+require('./src/models/asistente_virtual/rutina_ejercicio');
+require('./src/models/asistente_virtual/progreso_cliente');
+
 const app = express();
 
 db.sync({ alter: true }).then(() => {
