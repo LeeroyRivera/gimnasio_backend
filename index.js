@@ -3,6 +3,7 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const db = require('./src/config/database');
+const Usuario = require('./src/controllers/usuarios/controladorUsuario');
 
 // Importar modelos de usuarios
 require('./src/models/usuarios/rol');
@@ -54,9 +55,4 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Gym API' });
 });
 
-//app.use('/api/usuarios', require('./src/routes/usuarios/rutasUsuario'));
-
-const Usuario = require('./src/controllers/usuarios/controladorUsuario');
-app.post('/api/usuario-test', Usuario.guardarUsuario);
-
-module.exports = app;
+app.use('/api/usuarios', require('./src/routes/usuarios/rutasUsuario'));

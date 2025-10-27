@@ -27,8 +27,6 @@ exports.obtenerUsuarioPorUsername = async (req, res) => {
   }
 };
 
-exports.obtenerUsuario
-
 exports.obtenerUsuariosActivos = async (req, res) => {
   try {
     const usuarios = await Usuario.findAll({ where: { estado: 'activo' } });
