@@ -3,8 +3,8 @@ const routes = express.Router();
 const controladorMantenimiento = require('../../controladores/inventario/controladorMantenimientos');
 const { body, query } = require('express-validator');
 
-/*routes.get('/listar', controladorEquipo.listar);
-routes.post('/guardar', controladorEquipo.guardar);
-routes.put('/editar', controladorEquipo.editar);
-routes.delete('/eliminar', controladorEquipo.eliminar);*/
+routes.get('/listar', controladorMantenimiento.listar);
+routes.post('/guardar', controladorMantenimiento.guardar);
+routes.put('/editar', controladorMantenimiento.editar);
+routes.delete('/eliminar', controladorMantenimiento.eliminar);
 module.exports = routes;
