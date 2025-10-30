@@ -1,9 +1,9 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-const moment = require('moment');
-const CategoriaEquipo = sequelize.define('CategoriaEquipo', {}, {
-nombre_categoria: {
-    type: DataTypes.STRING,
+
+const CategoriaEquipo = sequelize.define('CategoriaEquipo', {
+  nombre_categoria: {
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   descripcion: {
@@ -13,11 +13,9 @@ nombre_categoria: {
   fecha_creacion: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW //en caso de que dejes la fecha actual
-    //defaultValue: moment().format('YYYY-MM-DD HH:mm:ss')
+    defaultValue: DataTypes.NOW 
   }
 }, {
-
   tableName: 'categorias_equipo',
   timestamps: false
 });

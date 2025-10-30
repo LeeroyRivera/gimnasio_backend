@@ -1,22 +1,23 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
 const categoriaEquipo = require('./categoria_equipo');
+const moment = require('moment');
 
 const Equipo = sequelize.define('Equipo', {}, {
   nombre_equipo: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.STRING(150),
     allowNull: false
   },
   marca: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   modelo: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   numero_serie: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   descripcion: {
@@ -33,7 +34,7 @@ const Equipo = sequelize.define('Equipo', {}, {
     allowNull: false
   },
   ubicacion: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(100),
     allowNull: false
   },
   estado: {

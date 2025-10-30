@@ -22,9 +22,10 @@ require('./src/models/control_acceso/asistencia');
 require('./src/models/control_acceso/codigo_qr_acceso');
 
 // Importar modelos de inventario
-require('./src/models/inventario/categoria_equipo');
-require('./src/models/inventario/equipo');
-require('./src/models/inventario/mantenimiento');
+
+const modeloCategoriaEquipo = require('./src/models/inventario/categoria_equipo');
+const modeloEquipo = require('./src/models/inventario/equipo');
+const modeloMantenimiento = require('./src/models/inventario/mantenimiento');
 
 // Importar modelos de asistente virtual
 require('./src/models/asistente_virtual/categoria_ejercicio');
@@ -32,6 +33,35 @@ require('./src/models/asistente_virtual/ejercicio');
 require('./src/models/asistente_virtual/rutina');
 require('./src/models/asistente_virtual/rutina_ejercicio');
 require('./src/models/asistente_virtual/progreso_cliente');
+
+
+db.authenticate().then(async (data) => {
+
+  console.log('Database authenticated successfully.');
+  modeloEquipo.belongsTo(modeloCategoriaEquipo);
+  modeloCategoriaEquipo.hasMany(modeloEquipo);
+  modeloMantenimiento.belongsTo(modeloEquipo);
+  modeloEquipo.hasMany(modeloMantenimiento);
+
+  await modeloCategoriaEquipo.sync().then((data) => {
+    console.log('tabla Categoria_Equipo creada!');
+  }).catch((error) => {
+    console.error('Error al crear la tabla Categoria_Equipo:', + error);
+  });
+
+  await modeloEquipo.sync().then((data) => {
+    console.log('tabla Equipo creada!');
+  }).catch((error) => {
+    console.error('Error al crear la tabla Equipo:', + error);
+  });
+
+  await modeloMantenimiento.sync().then((data) => {
+    console.log('tabla Equipo creada!');
+  }).catch((error) => {
+    console.error('Error al crear la tabla Equipo:', + error);
+  });
+
+})
 
 const app = express();
 
@@ -45,6 +75,11 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.set('port', process.env.PORT || 3000);
+
+// Rutas
+app.use('/api/inventario/categoria', require('./src/rutas/inventario/rutaCategoria'));
+app.use('/api/inventario/equipo', require('./src/rutas/inventario/rutaEquipo'));
+app.use('/api/inventario/mantenimiento', require('./src/rutas/inventario/rutaMantenimiento'));
 
 app.listen(app.get('port'), () => {
   console.log(`Server listening on http://localhost:${app.get('port')}`);
