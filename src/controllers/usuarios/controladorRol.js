@@ -44,7 +44,7 @@ exports.guardarRol = async (req, res) => {
 
 		res.status(201).json(nuevoRol);
 	} catch (error) {
-		res.status(500).json({ error: 'Error al guardar rol' });
+		res.status(500).json({ error: 'Error al guardar rol' + error });
 	}
 };
 
@@ -68,7 +68,7 @@ exports.actualizarRol = async (req, res) => {
 
 		res.status(200).json(rol);
 	} catch (error) {
-		res.status(500).json({ error: 'Error al actualizar rol' });
+		res.status(500).json({ error: 'Error al actualizar rol' + error });
 	}
 };
 
@@ -85,7 +85,7 @@ exports.eliminarRol = async (req, res) => {
 		await rol.destroy();
 		res.status(204).send();
 	} catch (error) {
-		res.status(500).json({ error: 'Error al eliminar rol' });
+		res.status(500).json({ error: 'Error al eliminar rol' + error });
 	}
 };
 
