@@ -3,7 +3,7 @@ const sequelize = require('../../config/database');
 const moment = require('moment');
 const equipo = require('./equipo');
 
-const Mantenimiento = sequelize.define('Mantenimiento', {}, {
+const Mantenimiento = sequelize.define('Mantenimiento',  {
 
   tipo_mantenimiento: {
     type: DataTypes.ENUM('preventivo', 'correctivo'),

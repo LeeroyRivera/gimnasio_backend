@@ -7,4 +7,5 @@ routes.get('/listar', controladorEquipo.listar);
 routes.post('/guardar', controladorEquipo.guardar);
 routes.put('/editar', controladorEquipo.editar);
 routes.delete('/eliminar', controladorEquipo.eliminar);
+routes.post('/imagen', controladorEquipo.validarImagenEquipo, controladorEquipo.GuardarImagenEquipo)
 module.exports = routes;

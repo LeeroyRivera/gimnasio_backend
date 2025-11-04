@@ -1,13 +1,16 @@
 const Equipo = require('../../models/inventario/equipo');
 const CategoriaEquipo = require('../../models/inventario/categoria_equipo');
 const { validationResult } = require('express-validator');
-
+const { uploadImagenEquipos} = require('../../config/archivos')
+const fs = require('fs');
+const path = require("path");
+const multer = require('multer');
 
 exports.listar = async (req, res) => {
   try {
     const equipos = await Equipo.findAll({
       include: [
-        { model: CategoriaEquipo, as: 'categoria', attributes: ['nombre_categoria'] }
+        { model: CategoriaEquipo }
       ]
     });
     res.status(200).json(equipos);
@@ -35,9 +38,12 @@ exports.guardar = async (req, res) => {
       costo,
       ubicacion,
       estado,
-      foto,
+      //foto,
       id_categoria
     } = req.body;
+
+        // Si se subió una imagen, la tomamos de req.file
+        const foto = req.file ? `img/equipos/${req.file.filename}` : null;
 
     const nuevoEquipo = await Equipo.create({
       nombre_equipo,
@@ -103,3 +109,106 @@ exports.eliminar = async (req, res) => {
     res.status(500).json({ msj: 'Error al eliminar los datos', error });
   }
 };
+
+exports.validarImagenEquipo = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json(errors.array());
+  }
+  else {
+      uploadImagenEquipos(req, res, (err) => {
+          if (err instanceof multer.MulterError) {
+              res.status(400).json({ msj: "Hay errores al cargar la imagen", error: err });
+          }
+          else if (err) {
+              res.status(400).json({ msj: "Hay errores al cargar la imagen", error: err });
+          }
+          else {
+              next();
+          }
+      });
+  }
+};
+/*
+exports.validarImagenEquipo = (req, res, next) => {
+  uploadImagenEquipos(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ msj: "Error al cargar la imagen", error: err });
+    } else if (err) {
+      return res.status(400).json({ msj: "Error al cargar la imagen", error: err.message });
+    }
+    next();
+  });
+};*/
+
+exports.GuardarImagenEquipo = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    if (!req.file) {
+      return res.status(400).json({ msj: "No se recibió ninguna imagen" });
+    }
+
+    const foto = `img/equipos/${req.file.filename}`;
+    const rutaImagen = path.join(process.cwd(), 'public/img/equipos', req.file.filename);
+
+    // Verificar si el archivo existe
+    if (!fs.existsSync(rutaImagen)) {
+      return res.status(400).json({ msj: "La imagen no se encontró en el servidor" });
+    }
+
+    // Buscar y actualizar el equipo
+    const equipo = await Equipo.findByPk(id);
+    if (!equipo) {
+      return res.status(404).json({ msj: "Equipo no encontrado" });
+    }
+
+    equipo.foto = foto;
+    await equipo.save();
+
+    res.status(200).json({
+      msj: "Imagen asociada correctamente al equipo",
+      nombreArchivo: foto
+    });
+
+  } catch (error) {
+    res.status(500).json({ msj: "Error al guardar la imagen del equipo", error: error.message });
+  }
+};
+
+
+
+/*
+exports.GuardarImagenEquipo = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json(errors.array());
+  } else {
+      try {
+          const foto = req.file.filename;
+          const { id } = req.query;
+
+          // Construir la ruta completa de la imagen
+          const rutaImagen = path.join(__dirname, '../public/img/equipos/', foto);
+
+          if (fs.existsSync(rutaImagen)) {
+              await Equipo.create({
+                  foto: foto,
+                  equipoId: id
+              })
+              .then((data) => {
+                  res.status(201).json({ msj: "Imagen asociada al empleado correctamente", nombreArchivo: foto });
+              })
+              .catch((er) => {
+                  res.status(500).json({ msj: "Error al asociar la imagen al empleado", error: er });
+              });
+          } else {
+              res.status(400).json({ msj: "La imagen no se encontró en el servidor" });
+          }
+      } catch (error) {
+          res.status(500).json({ msj: "Error al guardar la imagen del empleado", error: error });
+      }
+  }
+};
+
+*/

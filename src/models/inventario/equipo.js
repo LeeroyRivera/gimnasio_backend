@@ -3,7 +3,7 @@ const sequelize = require('../../config/database');
 const categoriaEquipo = require('./categoria_equipo');
 const moment = require('moment');
 
-const Equipo = sequelize.define('Equipo', {}, {
+const Equipo = sequelize.define('Equipo',  {
   nombre_equipo: {
     type: DataTypes.STRING(150),
     allowNull: false
