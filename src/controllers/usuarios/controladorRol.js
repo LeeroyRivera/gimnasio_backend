@@ -7,8 +7,7 @@ exports.listarTodosRoles = async (req, res) => {
 		const roles = await Rol.findAll();
 		res.status(200).json(roles);
 	} catch (error) {
-		console.error('Error al listar roles:', error);
-		res.status(500).json({ error: 'Error al listar roles' });
+		res.status(500).json({ error: 'Error al listar roles' + error });
 	}
 };
 
@@ -22,8 +21,7 @@ exports.obtenerRolPorId = async (req, res) => {
 		}
 		res.status(200).json(rol);
 	} catch (error) {
-		console.error('Error al obtener rol:', error);
-		res.status(500).json({ error: 'Error al obtener rol' });
+		res.status(500).json({ error: 'Error al obtener rol' + error });
 	}
 };
 
@@ -46,7 +44,6 @@ exports.guardarRol = async (req, res) => {
 
 		res.status(201).json(nuevoRol);
 	} catch (error) {
-		console.error('Error al guardar rol:', error);
 		res.status(500).json({ error: 'Error al guardar rol' });
 	}
 };
@@ -71,7 +68,6 @@ exports.actualizarRol = async (req, res) => {
 
 		res.status(200).json(rol);
 	} catch (error) {
-		console.error('Error al actualizar rol:', error);
 		res.status(500).json({ error: 'Error al actualizar rol' });
 	}
 };
@@ -89,7 +85,6 @@ exports.eliminarRol = async (req, res) => {
 		await rol.destroy();
 		res.status(204).send();
 	} catch (error) {
-		console.error('Error al eliminar rol:', error);
 		res.status(500).json({ error: 'Error al eliminar rol' });
 	}
 };

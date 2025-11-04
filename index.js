@@ -35,7 +35,7 @@ require('./src/models/asistente_virtual/progreso_cliente');
 
 const app = express();
 
-db.sync({}).then(() => {
+db.sync({ alter: true }).then(() => {
   console.log('Database connected successfully.');
 }).catch((error) => {
   console.error('Unable to connect to the database:', error);
