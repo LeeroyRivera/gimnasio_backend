@@ -3,7 +3,6 @@ const morgan = require('morgan');
 require('dotenv').config();
 
 const db = require('./src/config/database');
-const Usuario = require('./src/controllers/usuarios/controladorUsuario');
 
 // Importar modelos de usuarios
 require('./src/models/usuarios/rol');
@@ -56,3 +55,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/usuario', require('./src/routes/usuarios/rutasUsuario'));
+app.use('/api/rol', require('./src/routes/usuarios/rutasRol'));
+
+module.exports = app;
