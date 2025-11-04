@@ -50,7 +50,7 @@ exports.guardarRol = async (req, res) => {
 
 
 exports.actualizarRol = async (req, res) => {
-	const { id } = req.params;
+	const { id } = req.query;
 	const errores = validationResult(req);
 	if (!errores.isEmpty()) {
 		return res.status(400).json({ errores: errores.array() });
@@ -74,7 +74,7 @@ exports.actualizarRol = async (req, res) => {
 
 
 exports.eliminarRol = async (req, res) => {
-	const { id } = req.params;
+	const { id } = req.query;
 
 	try {
 		const rol = await Rol.findByPk(id);

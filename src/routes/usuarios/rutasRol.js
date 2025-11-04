@@ -17,7 +17,7 @@ router.get('/listar', controladorRol.listarTodosRoles);
 
 // GET /api/rol/:id - Obtener rol por ID
 router.get('/rolId', 
-  param('id').isInt().withMessage('El ID debe ser un número entero'),
+  query('id').isInt().withMessage('El ID debe ser un número entero'),
   controladorRol.obtenerRolPorId
 );
 
@@ -26,14 +26,14 @@ router.post('/guardar', validacionesRol, controladorRol.guardarRol);
 
 // PUT /api/rol/:id - Actualizar rol
 router.put('/actualizar', 
-  param('id').isInt().withMessage('El ID debe ser un número entero'),
+  query('id').isInt().withMessage('El ID debe ser un número entero'),
   validacionesRol,
   controladorRol.actualizarRol
 );
 
 // DELETE /api/rol/:id - Eliminar rol
 router.delete('/eliminar', 
-  param('id').isInt().withMessage('El ID debe ser un número entero'),
+  query('id').isInt().withMessage('El ID debe ser un número entero'),
   controladorRol.eliminarRol
 );
 
