@@ -13,7 +13,7 @@ exports.listarTodosRoles = async (req, res) => {
 
 
 exports.obtenerRolPorId = async (req, res) => {
-	const { id } = req.params;
+	const { id } = req.query;
 	try {
 		const rol = await Rol.findByPk(id);
 		if (!rol) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { body, param } = require('express-validator');
+const { body, param, query } = require('express-validator');
 const controladorRol = require('../../controllers/usuarios/controladorRol');
 
 // Validaciones para crear/actualizar rol
