@@ -55,4 +55,4 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Gym API' });
 });
 
-app.use('/api/usuarios', require('./src/routes/usuarios/rutasUsuario'));
+app.use('/api/usuario', require('./src/routes/usuarios/rutasUsuario'));
