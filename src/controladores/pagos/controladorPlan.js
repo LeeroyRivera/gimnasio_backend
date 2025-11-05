@@ -1,1 +1,0 @@
-const  plan_membresia = require('../../models/inventario/equipo');

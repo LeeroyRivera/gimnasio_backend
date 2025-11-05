@@ -13,9 +13,10 @@ require('./src/models/usuarios/personal');
 require('./src/models/usuarios/sesion');
 
 // Importar modelos de pagos
-require('./src/models/pagos/plan_membresia');
-require('./src/models/pagos/membresia');
-require('./src/models/pagos/pago');
+const modeloPlanMembresia = require('./src/models/pagos/plan_membresia');
+const modeloMembresia = require('./src/models/pagos/membresia');
+const modeloPago = require('./src/models/pagos/pago');
+
 
 // Importar modelos de control de acceso
 require('./src/models/control_acceso/asistencia');
@@ -33,6 +34,54 @@ require('./src/models/asistente_virtual/rutina');
 require('./src/models/asistente_virtual/rutina_ejercicio');
 require('./src/models/asistente_virtual/progreso_cliente');
 
+db.authenticate().then(async (data) => {
+
+  // Relaciones pagos
+
+  modeloMembresia.belongsTo(modeloPlanMembresia, {
+    foreignKey: 'id_plan' 
+  });
+
+  modeloPlanMembresia.hasMany(modeloMembresia, {
+    foreignKey: 'id_plan' 
+  });
+
+  modeloPago.belongsTo(modeloMembresia, {
+    foreignKey: 'id_membresia' 
+  });
+
+  modeloMembresia.hasMany(modeloPago, {
+    foreignKey: 'id_membresia' 
+  });
+  /*
+  modeloMembresia.belongsTo(modeloPlanMembresia);
+  modeloPlanMembresia.hasMany(modeloMembresia);
+  modeloPago.belongsTo(modeloMembresia);
+  modeloMembresia.hasMany(modeloPago);*/
+
+  await modeloPlanMembresia.sync().then((data) => {
+    console.log('tabla planes_membresia creada!');
+  }).catch((error) => {
+    console.error('Error al crear la tabla Categoria_Equipo:', + error);
+  });
+
+
+  await modeloPago.sync().then((data) => {
+    console.log('tabla pagos creada!');
+  }).catch((error) => {
+    console.error('Error al crear la tabla Equipo:', + error);
+  });
+
+  await modeloMembresia.sync().then((data) => {
+    console.log('tabla membresias creada!');
+  }).catch((error) => {
+    console.error('Error al crear la tabla Equipo:', + error);
+  });
+
+
+})
+
+
 const app = express();
 
 db.sync({ alter: true }).then(() => {
@@ -45,6 +94,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.set('port', process.env.PORT || 3000);
+// Rutas
+app.use('/api/pagos/planes', require('./src/rutas/pagos/rutaPlanMembresia'));
+app.use('/api/pagos/membresias', require('./src/rutas/pagos/rutaMembresia'));
+app.use('/api/pagos/pagos', require('./src/rutas/pagos/rutaPago'));
 
 app.listen(app.get('port'), () => {
   console.log(`Server listening on http://localhost:${app.get('port')}`);
