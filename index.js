@@ -39,10 +39,18 @@ require('./src/models/asistente_virtual/progreso_cliente');
 db.authenticate().then(async (data) => {
 
   console.log('Database authenticated successfully.');
-  modeloEquipo.belongsTo(modeloCategoriaEquipo);
-  modeloCategoriaEquipo.hasMany(modeloEquipo);
-  modeloMantenimiento.belongsTo(modeloEquipo);
-  modeloEquipo.hasMany(modeloMantenimiento);
+  modeloEquipo.belongsTo(modeloCategoriaEquipo, {
+    foreignKey: 'id_categoria' 
+  });
+  modeloCategoriaEquipo.hasMany(modeloEquipo, {
+    foreignKey: 'id_categoria' 
+  });
+  modeloMantenimiento.belongsTo(modeloEquipo,{
+    foreignKey: 'id_equipo' 
+  });
+  modeloEquipo.hasMany(modeloMantenimiento, {
+    foreignKey: 'id_equipo' 
+  });
 
   await modeloCategoriaEquipo.sync().then((data) => {
     console.log('tabla Categoria_Equipo creada!');
