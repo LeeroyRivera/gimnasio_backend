@@ -7,7 +7,6 @@ const moment = require('moment');
 const Pago = sequelize.define('Pago', {
   id_membresia: {
     type: DataTypes.INTEGER,
-   
     references: {
       model: Membresia,
       key: 'id'
@@ -25,7 +24,7 @@ const Pago = sequelize.define('Pago', {
   fecha_pago: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: moment().format('YYYY-MM-DD HH:mm:ss')
+    defaultValue: DataTypes.NOW 
   },
   comprobante: {
     type: DataTypes.STRING(255),
@@ -45,6 +44,10 @@ const Pago = sequelize.define('Pago', {
   },*/
   notas: {
     type: DataTypes.TEXT,
+    allowNull: true
+  },
+  detalle_descuento: {
+    type: DataTypes.STRING(255),
     allowNull: true
   }
 }, {

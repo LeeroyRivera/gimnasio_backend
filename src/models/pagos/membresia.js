@@ -28,7 +28,8 @@ const Membresia = sequelize.define('Membresia', {
   },
   fecha_vencimiento: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: false,
+    defaultValue: moment().format('YYYY-MM-DD HH:mm:ss')
   },
   estado: {
     type: DataTypes.ENUM('Activa', 'Vencida', 'suspendida','Cancelada'),
@@ -37,7 +38,7 @@ const Membresia = sequelize.define('Membresia', {
   },
   monto_pagado: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: true
+    allowNull: false
   },
   descuento_aplicado: {
     type: DataTypes.DECIMAL(10, 2),
@@ -50,7 +51,7 @@ const Membresia = sequelize.define('Membresia', {
   fecha_registro: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: moment().format('YYYY-MM-DD HH:mm:ss')
+    defaultValue: DataTypes.NOW 
   }
 }, {
   tableName: 'membresias',

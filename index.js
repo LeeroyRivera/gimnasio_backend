@@ -39,11 +39,13 @@ db.authenticate().then(async (data) => {
   // Relaciones pagos
 
   modeloMembresia.belongsTo(modeloPlanMembresia, {
-    foreignKey: 'id_plan' 
+    foreignKey: 'id_plan', 
+    as: 'plan'
   });
 
   modeloPlanMembresia.hasMany(modeloMembresia, {
-    foreignKey: 'id_plan' 
+    foreignKey: 'id_plan', 
+     as: 'membresias'
   });
 
   modeloPago.belongsTo(modeloMembresia, {

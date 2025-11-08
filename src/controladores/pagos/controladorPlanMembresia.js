@@ -22,7 +22,6 @@ exports.guardar = async (req, res) => {
     const nuevoPlan = await PlanMembresia.create({
       nombre_plan,
       descripcion,
-      precio,
       duracion_dias,
       acceso_gimnasio,
       acceso_entrenador,
@@ -37,11 +36,11 @@ exports.guardar = async (req, res) => {
 };
 
 exports.editar = async (req, res) => {
-  const errores = validationResult(req).errors;
+  const errores = validationResult(req).array();
 
   if (errores.length > 0) {
     const data = errores.map(s => ({
-      atributo: s.path,
+      //atributo: s.path,
       msj: s.msg
     }));
     res.json({ msj: 'Hay errores', data });
@@ -50,7 +49,6 @@ exports.editar = async (req, res) => {
     const {
       nombre_plan,
       descripcion,
-      precio,
       duracion_dias,
       acceso_gimnasio,
       acceso_entrenador,
@@ -61,7 +59,6 @@ exports.editar = async (req, res) => {
     await PlanMembresia.update({
       nombre_plan,
       descripcion,
-      precio,
       duracion_dias,
       acceso_gimnasio,
       acceso_entrenador,
@@ -78,11 +75,11 @@ exports.editar = async (req, res) => {
 };
 
 exports.eliminar = async (req, res) => {
-  const errores = validationResult(req).errors;
+  const errores = validationResult(req).array();
 
   if (errores.length > 0) {
     const data = errores.map(i => ({
-      atributo: i.path,
+    //  atributo: i.path,
       msj: i.msg
     }));
     res.json({ msj: 'Hay errores', data });

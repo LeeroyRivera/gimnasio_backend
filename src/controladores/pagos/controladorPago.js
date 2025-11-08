@@ -1,5 +1,8 @@
+const { Model } = require('sequelize');
+const Membresia = require('../../models/pagos/membresia');
 const Pago = require('../../models/pagos/pago');
 const { validationResult } = require('express-validator');
+const PlanMembresia = require('../../models/pagos/plan_membresia');
 
 exports.listar = async (req, res) => {
   try {
@@ -20,7 +23,7 @@ exports.guardar = async (req, res) => {
   try {
     const {
       id_membresia,
-      monto,
+     // monto,
       metodo_pago,
       comprobante,
       referencia,
@@ -28,28 +31,55 @@ exports.guardar = async (req, res) => {
       notas
     } = req.body;
 
+    const membresia = await Membresia.findByPk(id_membresia);
+  
+
+      if (!membresia) {
+        return res.status(404).json({ message: 'Membresía no encontrada' });
+      }
+      let monto = Number(membresia.monto_pagado);
+      let descuento = Number(membresia.descuento_aplicado) || 0;
+      
+
+    // 🔹 3. Aplicar descuento (si se envía)
+    // Ejemplo: descuento = 10 significa 10% de descuento
+    let montoFinal = monto;
+
+    
+    if (descuento && descuento > 0) {
+      montoFinal = monto - (monto * descuento / 100);
+    }
+
+
     const nuevoPago = await Pago.create({
       id_membresia,
-      monto,
+      monto: montoFinal,
       metodo_pago,
       comprobante,
       referencia,
      // procesado_por,
-      notas
+      notas,
+      detalle_descuento: descuento || 0
     });
 
-    res.status(201).json(nuevoPago);
+    res.status(201).json({
+      message: 'Pago registrado correctamente',
+      data: nuevoPago
+    });
+
+
+   
   } catch (error) {
     res.status(500).json({ message: 'Error al guardar el pago', error: error.message });
   }
 };
 
 exports.editar = async (req, res) => {
-  const errores = validationResult(req).errors;
+  const errores = validationResult(req).array();
 
   if (errores.length > 0) {
     const data = errores.map(s => ({
-      atributo: s.path,
+     // atributo: s.path,
       msj: s.msg
     }));
     res.json({ msj: 'Hay errores', data });
@@ -74,7 +104,7 @@ exports.editar = async (req, res) => {
       //procesado_por,
       notas
     }, {
-      where: { id_pago: id }
+      where: { id: id }
     }).then(data => {
       res.json({ msj: 'Registro actualizado', data });
     }).catch(er => {
@@ -84,11 +114,11 @@ exports.editar = async (req, res) => {
 };
 
 exports.eliminar = async (req, res) => {
-  const errores = validationResult(req).errors;
+  const errores = validationResult(req).array();
 
   if (errores.length > 0) {
     const data = errores.map(i => ({
-      atributo: i.path,
+     // atributo: i.path,
       msj: i.msg
     }));
     res.json({ msj: 'Hay errores', data });

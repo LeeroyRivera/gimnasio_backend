@@ -11,10 +11,10 @@ const PlanMembresia = sequelize.define('PlanMembresia', {
     type: DataTypes.TEXT,
     allowNull: true
   },
-  precio: {
+ /* precio: {
     type: DataTypes.DECIMAL(10, 2),
     allowNull: false
-  },
+  },*/
   duracion_dias: {
     type: DataTypes.INTEGER,
     allowNull: false
@@ -42,7 +42,7 @@ const PlanMembresia = sequelize.define('PlanMembresia', {
   fecha_creacion: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: moment().format('YYYY-MM-DD HH:mm:ss')
+    defaultValue: DataTypes.NOW 
   }
 }, {
   tableName: 'planes_membresia',
