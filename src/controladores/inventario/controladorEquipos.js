@@ -129,17 +129,7 @@ exports.validarImagenEquipo = (req, res, next) => {
       });
   }
 };
-/*
-exports.validarImagenEquipo = (req, res, next) => {
-  uploadImagenEquipos(req, res, (err) => {
-    if (err instanceof multer.MulterError) {
-      return res.status(400).json({ msj: "Error al cargar la imagen", error: err });
-    } else if (err) {
-      return res.status(400).json({ msj: "Error al cargar la imagen", error: err.message });
-    }
-    next();
-  });
-};*/
+
 
 exports.GuardarImagenEquipo = async (req, res) => {
   try {
@@ -177,38 +167,3 @@ exports.GuardarImagenEquipo = async (req, res) => {
 };
 
 
-
-/*
-exports.GuardarImagenEquipo = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return res.status(400).json(errors.array());
-  } else {
-      try {
-          const foto = req.file.filename;
-          const { id } = req.query;
-
-          // Construir la ruta completa de la imagen
-          const rutaImagen = path.join(__dirname, '../public/img/equipos/', foto);
-
-          if (fs.existsSync(rutaImagen)) {
-              await Equipo.create({
-                  foto: foto,
-                  equipoId: id
-              })
-              .then((data) => {
-                  res.status(201).json({ msj: "Imagen asociada al empleado correctamente", nombreArchivo: foto });
-              })
-              .catch((er) => {
-                  res.status(500).json({ msj: "Error al asociar la imagen al empleado", error: er });
-              });
-          } else {
-              res.status(400).json({ msj: "La imagen no se encontró en el servidor" });
-          }
-      } catch (error) {
-          res.status(500).json({ msj: "Error al guardar la imagen del empleado", error: error });
-      }
-  }
-};
-
-*/
