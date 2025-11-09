@@ -1,4 +1,7 @@
-const { Model } = require('sequelize');
+const fs = require('fs');
+const path = require("path");
+const multer = require('multer');
+const { uploadComprobantePago } = require('../../config/archivos');
 const Membresia = require('../../models/pagos/membresia');
 const Pago = require('../../models/pagos/pago');
 const { validationResult } = require('express-validator');
@@ -25,7 +28,7 @@ exports.guardar = async (req, res) => {
       id_membresia,
      // monto,
       metodo_pago,
-      comprobante,
+      //comprobante,
       referencia,
       //procesado_por,
       notas
@@ -41,7 +44,7 @@ exports.guardar = async (req, res) => {
       let descuento = Number(membresia.descuento_aplicado) || 0;
       
 
-    // 🔹 3. Aplicar descuento (si se envía)
+    // 3. Aplicar descuento (si se envía)
     // Ejemplo: descuento = 10 significa 10% de descuento
     let montoFinal = monto;
 
@@ -50,7 +53,9 @@ exports.guardar = async (req, res) => {
       montoFinal = monto - (monto * descuento / 100);
     }
 
-
+    // Si se subió un archivo, lo agregamos
+    const comprobante = req.file ? `img/pagos/${req.file.filename}` : null;
+    
     const nuevoPago = await Pago.create({
       id_membresia,
       monto: montoFinal,
@@ -134,3 +139,56 @@ exports.eliminar = async (req, res) => {
     });
   }
 };
+
+
+exports.validarImagenPago = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json(errors.array());
+  }
+
+  uploadComprobantePago(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+          res.status(400).json({ msj: "Error al cargar el comprobante", error: err });
+      } else if (err) {
+          res.status(400).json({ msj: "Error al cargar el comprobante", error: err });
+      } else {
+          next();
+      }
+  });
+};
+
+exports.GuardarComprobante = async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    if (!req.file) {
+      return res.status(400).json({ msj: "No se recibió ninguna imagen de comprobante" });
+    }
+
+    const foto = `img/pagos/${req.file.filename}`;
+    const rutaImagen = path.join(process.cwd(), 'public/img/pagos', req.file.filename);
+
+    if (!fs.existsSync(rutaImagen)) {
+      return res.status(400).json({ msj: "El comprobante no se encontró en el servidor" });
+    }
+
+    const pago = await Pago.findByPk(id); 
+    if (!pago) {
+      return res.status(404).json({ msj: "Pago no encontrado" });
+    }
+
+    pago.comprobante = foto;
+    await pago.save();
+
+    res.status(200).json({
+      msj: "Comprobante asociado correctamente al pago",
+      archivo: foto
+    });
+
+  } catch (error) {
+    res.status(500).json({ msj: "Error al guardar el comprobante del pago", error: error.message });
+  }
+};
+
+

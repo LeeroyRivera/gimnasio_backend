@@ -7,5 +7,6 @@ routes.get('/listar', controladorPago.listar);
 routes.post('/guardar', controladorPago.guardar);
 routes.put('/editar', controladorPago.editar);
 routes.delete('/eliminar', controladorPago.eliminar);
+routes.post('/comprobante', controladorPago.validarImagenPago, controladorPago.GuardarComprobante);
 
 module.exports = routes;

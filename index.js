@@ -1,6 +1,8 @@
 const express = require('express');
 const morgan = require('morgan');
 require('dotenv').config();
+const path = require("path");
+
 
 const db = require('./src/config/database');
 
@@ -101,6 +103,9 @@ app.use('/api/pagos/planes', require('./src/rutas/pagos/rutaPlanMembresia'));
 app.use('/api/pagos/membresias', require('./src/rutas/pagos/rutaMembresia'));
 app.use('/api/pagos/pagos', require('./src/rutas/pagos/rutaPago'));
 
+app.use('/api/imagenes',
+  express.static(path.join(__dirname, 'public/img'))
+);
 app.listen(app.get('port'), () => {
   console.log(`Server listening on http://localhost:${app.get('port')}`);
 });
