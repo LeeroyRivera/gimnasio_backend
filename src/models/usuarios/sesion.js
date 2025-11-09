@@ -29,7 +29,7 @@ const Sesion = sequelize.define(
       type: DataTypes.DATE,
       allowNull: false,
     },
-    fecha_fin: {
+    fecha_cierre: {
       type: DataTypes.DATE,
       allowNull: true,
     },
