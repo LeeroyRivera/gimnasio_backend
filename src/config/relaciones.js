@@ -22,9 +22,9 @@ const RutinaEjercicio = require("../models/asistente_virtual/rutina_ejercicio");
 const ProgresoCliente = require("../models/asistente_virtual/progreso_cliente");
 
 module.exports = function establecerRelaciones() {
-  // Usuario / Rol (1:1)
-  Usuario.hasOne(Rol, { foreignKey: "id_rol" });
-  Rol.belongsTo(Usuario, { foreignKey: "id_rol" });
+  // Usuario / Rol (1:N)
+  Rol.hasMany(Usuario, { foreignKey: "id_rol" });
+  Usuario.belongsTo(Rol, { foreignKey: "id_rol" });
 
   // Cliente / Personal (1:1 con Usuario)
   Usuario.hasOne(Cliente, { foreignKey: "id_usuario", onDelete: "CASCADE" });
