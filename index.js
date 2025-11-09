@@ -35,6 +35,8 @@ require('./src/models/asistente_virtual/ejercicio');
 require('./src/models/asistente_virtual/rutina');
 require('./src/models/asistente_virtual/rutina_ejercicio');
 require('./src/models/asistente_virtual/progreso_cliente');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./src/config/swagger');
 
 db.authenticate().then(async (data) => {
 
@@ -57,12 +59,7 @@ db.authenticate().then(async (data) => {
   modeloMembresia.hasMany(modeloPago, {
     foreignKey: 'id_membresia' 
   });
-  /*
-  modeloMembresia.belongsTo(modeloPlanMembresia);
-  modeloPlanMembresia.hasMany(modeloMembresia);
-  modeloPago.belongsTo(modeloMembresia);
-  modeloMembresia.hasMany(modeloPago);*/
-
+  
   await modeloPlanMembresia.sync().then((data) => {
     console.log('tabla planes_membresia creada!');
   }).catch((error) => {
@@ -102,6 +99,11 @@ app.set('port', process.env.PORT || 3000);
 app.use('/api/pagos/planes', require('./src/rutas/pagos/rutaPlanMembresia'));
 app.use('/api/pagos/membresias', require('./src/rutas/pagos/rutaMembresia'));
 app.use('/api/pagos/pagos', require('./src/rutas/pagos/rutaPago'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 app.use('/api/imagenes',
   express.static(path.join(__dirname, 'public/img'))
