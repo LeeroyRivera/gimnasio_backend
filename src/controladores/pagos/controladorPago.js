@@ -16,6 +16,14 @@ exports.listar = async (req, res) => {
   }
 };
 
+
+// Genera un número de referencia
+function generarReferencia() {
+  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+  const fecha = new Date().toISOString().split("T")[0].replace(/-/g, "");
+  return `PAG-${fecha}-${random}`;
+}
+
 exports.guardar = async (req, res) => {
   const errores = validationResult(req);
 
@@ -29,7 +37,6 @@ exports.guardar = async (req, res) => {
      // monto,
       metodo_pago,
       //comprobante,
-      referencia,
       //procesado_por,
       notas
     } = req.body;
@@ -53,6 +60,8 @@ exports.guardar = async (req, res) => {
       montoFinal = monto - (monto * descuento / 100);
     }
 
+    const referencia = req.body.referencia || generarReferencia();
+
     // Si se subió un archivo, lo agregamos
     const comprobante = req.file ? `img/pagos/${req.file.filename}` : null;
     
@@ -71,8 +80,6 @@ exports.guardar = async (req, res) => {
       message: 'Pago registrado correctamente',
       data: nuevoPago
     });
-
-
    
   } catch (error) {
     res.status(500).json({ message: 'Error al guardar el pago', error: error.message });
