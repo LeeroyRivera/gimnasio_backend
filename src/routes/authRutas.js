@@ -79,22 +79,6 @@ router.post("/login", validacionesLogin, async (req, res) => {
   }
 });
 
-router.post("/registro", validacionesRegistro, async (req, res) => {
-  const { nombre, apellido, email, username, password_hash } = req.body;
-  try {
-    const nuevoUsuario = await Usuario.create({
-      nombre,
-      apellido,
-      email,
-      username,
-      password_hash,
-    });
-    return res.status(201).json({ usuario: nuevoUsuario });
-  } catch (error) {
-    return res.status(500).json({ mensaje: "Error en el servidor" + error });
-  }
-});
-
 router.get(
   "/perfil",
   passport.authenticate("jwt", { session: false }),
