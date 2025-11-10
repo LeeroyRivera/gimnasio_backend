@@ -17,6 +17,52 @@ const validacionesLogin = [
   body("password").notEmpty().withMessage("La contraseña es obligatoria"),
 ];
 
+/**
+ * @swagger
+ * tags:
+ *   name: Autenticacion
+ *   description: Endpoints de autenticación y perfil protegido
+ */
+/**
+ * @swagger
+ * /autenticacion/login:
+ *   post:
+ *     summary: Iniciar sesión y obtener un token JWT
+ *     tags: [Autenticacion]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [username, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Alternativa a username (si está habilitado)
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       200:
+ *         description: Autenticación correcta
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *       400:
+ *         description: Error de validación en la petición
+ *       401:
+ *         description: Credenciales inválidas
+ *       500:
+ *         description: Error interno del servidor
+ */
 router.post("/login", validacionesLogin, async (req, res) => {
   const { email, username, password } = req.body;
   try {
@@ -71,6 +117,20 @@ router.post("/login", validacionesLogin, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /autenticacion/perfil:
+ *   get:
+ *     summary: Obtener el perfil del usuario autenticado
+ *     tags: [Autenticacion]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Perfil del usuario autenticado
+ *       401:
+ *         description: No autorizado o token inválido
+ */
 router.get(
   "/perfil",
   passport.authenticate("jwt", { session: false }),

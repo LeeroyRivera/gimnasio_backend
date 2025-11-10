@@ -12,10 +12,88 @@ function manejarValidaciones(req, res, next) {
   next();
 }
 
+/**
+ * @swagger
+ * tags:
+ *   name: Usuarios
+ *   description: Operaciones de gestión de usuarios del sistema
+ */
+/**
+ * @swagger
+ * /usuario/listar:
+ *   get:
+ *     summary: Listar todos los usuarios
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios obtenida correctamente
+ */
 router.get("/listar", controladorUsuario.listarTodosUsuarios);
 
+/**
+ * @swagger
+ * /usuario/activo:
+ *   get:
+ *     summary: Listar usuarios activos
+ *     tags: [Usuarios]
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios activos
+ */
 router.get("/activo", controladorUsuario.obtenerUsuariosActivos);
 
+/**
+ * @swagger
+ * /usuario/registro:
+ *   post:
+ *     summary: Registrar un nuevo usuario (y su información de cliente asociada)
+ *     tags: [Usuarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [id_rol, nombre, apellido, email, username, password, cliente]
+ *             properties:
+ *               id_rol:
+ *                 type: integer
+ *               nombre:
+ *                 type: string
+ *               apellido:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *                 format: password
+ *               telefono:
+ *                 type: string
+ *               fecha_nacimiento:
+ *                 type: string
+ *                 format: date
+ *               genero:
+ *                 type: string
+ *                 enum: [M, F, Otros]
+ *               cliente:
+ *                 type: object
+ *                 description: Datos adicionales del perfil cliente
+ *                 properties:
+ *                   tipo_sangre: { type: string }
+ *                   peso_actual: { type: number, format: float }
+ *                   altura: { type: number, format: float }
+ *                   condiciones_medicas: { type: string }
+ *                   contacto_emergencia: { type: string }
+ *                   telefono_emergencia: { type: string }
+ *     responses:
+ *       201:
+ *         description: Usuario registrado correctamente
+ *       400:
+ *         description: Error de validación en los datos enviados
+ */
 router.post(
   "/registro",
   [
@@ -79,6 +157,45 @@ router.post(
   controladorUsuario.guardarUsuario
 );
 
+/**
+ * @swagger
+ * /usuario/actualizar:
+ *   put:
+ *     summary: Actualiza parcialmente un usuario existente
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario a actualizar
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_rol: { type: integer }
+ *               nombre: { type: string }
+ *               apellido: { type: string }
+ *               email: { type: string, format: email }
+ *               username: { type: string }
+ *               password: { type: string, format: password }
+ *               telefono: { type: string }
+ *               fecha_nacimiento: { type: string, format: date }
+ *               genero: { type: string, enum: [M, F, Otros] }
+ *               foto_perfil: { type: string }
+ *               estado: { type: string, enum: [activo, inactivo, suspendido] }
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado correctamente
+ *       400:
+ *         description: Error de validación
+ *       404:
+ *         description: Usuario no encontrado
+ */
 router.put(
   "/actualizar",
   [
@@ -129,6 +246,27 @@ router.put(
   controladorUsuario.actualizarUsuario
 );
 
+/**
+ * @swagger
+ * /usuario/eliminar:
+ *   delete:
+ *     summary: Elimina (lógico) un usuario del sistema
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario a eliminar
+ *     responses:
+ *       200:
+ *         description: Usuario eliminado correctamente
+ *       400:
+ *         description: Error de validación
+ *       404:
+ *         description: Usuario no encontrado
+ */
 router.delete(
   "/eliminar",
   [query("id").isInt().withMessage("El ID debe ser un número entero")],
