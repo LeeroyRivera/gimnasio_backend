@@ -75,7 +75,7 @@ router.post("/login", validacionesLogin, async (req, res) => {
 
     return res.json({ token });
   } catch (error) {
-    return res.status(500).json({ mensaje: "Error en el servidor" });
+    return res.status(500).json({ mensaje: "Error en el servidor" + error });
   }
 });
 
@@ -91,7 +91,7 @@ router.post("/registro", validacionesRegistro, async (req, res) => {
     });
     return res.status(201).json({ usuario: nuevoUsuario });
   } catch (error) {
-    return res.status(500).json({ mensaje: "Error en el servidor" });
+    return res.status(500).json({ mensaje: "Error en el servidor" + error });
   }
 });
 
