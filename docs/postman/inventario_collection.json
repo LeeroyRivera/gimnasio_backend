@@ -1,0 +1,368 @@
+{
+  "info": {
+    "name": "Inventario - Gym API",
+    "description": "Colección Postman para endpoints del módulo de inventario (Categorías, Equipos, Mantenimientos). Incluye pruebas básicas de estado y estructura.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Categorías",
+      "item": [
+        {
+          "name": "Listar categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/categoria/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "categoria", "listar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);",
+                  "pm.test('Body es arreglo', () => Array.isArray(pm.response.json()));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar categoría",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_categoria\": \"Cardio\",\n  \"descripcion\": \"Equipos para entrenamiento cardiovascular\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/categoria/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "categoria", "guardar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.code === 201);",
+                  "pm.test('Tiene id creado', () => pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar categoría",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_categoria\": \"Cardio y Aerobicos\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/categoria/editar?id={{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "categoria", "editar"],
+              "query": [{ "key": "id", "value": "{{categoriaId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);",
+                  "pm.test('Nombre actualizado (si responde objeto)', () => { const b = pm.response.json(); if(b && b.nombre_categoria){ pm.expect(b.nombre_categoria).to.include('Cardio'); }});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar categoría",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/categoria/eliminar?id={{categoriaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "categoria", "eliminar"],
+              "query": [{ "key": "id", "value": "{{categoriaId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Equipos",
+      "item": [
+        {
+          "name": "Listar equipos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/equipo/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "equipo", "listar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar equipo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_equipo\": \"Bicicleta Spinning\",\n  \"marca\": \"XBrand\",\n  \"modelo\": \"SP-500\",\n  \"numero_serie\": \"SN123456\",\n  \"descripcion\": \"Equipo para spinning intensivo\",\n  \"fecha_compra\": \"2024-01-10\",\n  \"costo\": 1200.50,\n  \"ubicacion\": \"Sala Cardio\",\n  \"estado\": \"Excelente\",\n  \"id_categoria\": {{categoriaId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/equipo/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "equipo", "guardar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.code === 201);",
+                  "pm.test('Tiene id creado', () => pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar equipo",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Bueno\",\n  \"ubicacion\": \"Zona Peso Libre\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/equipo/editar?id={{equipoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "equipo", "editar"],
+              "query": [{ "key": "id", "value": "{{equipoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar equipo",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/equipo/eliminar?id={{equipoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "equipo", "eliminar"],
+              "query": [{ "key": "id", "value": "{{equipoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Subir imagen equipo",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "multipart/form-data" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "imagen", "type": "file", "src": "" }]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/equipo/imagen?id={{equipoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "equipo", "imagen"],
+              "query": [{ "key": "id", "value": "{{equipoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Mantenimientos",
+      "item": [
+        {
+          "name": "Listar mantenimientos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/mantenimiento/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "mantenimiento", "listar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar mantenimiento",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo_mantenimiento\": \"preventivo\",\n  \"descripcion_trabajo\": \"Lubricación y ajuste general\",\n  \"tecnico_responsable\": \"Juan Pérez\",\n  \"costo\": 150.75,\n  \"id_equipo\": {{equipoId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/mantenimiento/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "mantenimiento", "guardar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.code === 201);",
+                  "pm.test('Tiene id creado', () => pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar mantenimiento",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Completado\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/mantenimiento/editar?id={{mantenimientoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "mantenimiento", "editar"],
+              "query": [{ "key": "id", "value": "{{mantenimientoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar mantenimiento",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/inventario/mantenimiento/eliminar?id={{mantenimientoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "inventario", "mantenimiento", "eliminar"],
+              "query": [{ "key": "id", "value": "{{mantenimientoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "categoriaId", "value": "1" },
+    { "key": "equipoId", "value": "1" },
+    { "key": "mantenimientoId", "value": "1" }
+  ]
+}

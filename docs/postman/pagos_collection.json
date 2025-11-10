@@ -1,0 +1,364 @@
+{
+  "info": {
+    "name": "Pagos - Gym API",
+    "description": "Colección Postman para endpoints del módulo de pagos: Planes de Membresía, Membresías y Pagos. Incluye ejemplos de cuerpo y pruebas básicas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Planes de Membresía",
+      "item": [
+        {
+          "name": "Listar planes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/planes/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "planes", "listar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar plan",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre_plan\": \"Mensual\",\n  \"descripcion\": \"Acceso general al gimnasio por 30 días\",\n  \"duracion_dias\": 30,\n  \"acceso_gimnasio\": true,\n  \"acceso_entrenador\": false,\n  \"acceso_asistente_virtual\": true,\n  \"estado\": \"Activa\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/planes/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "planes", "guardar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);",
+                  "pm.test('Plan creado tiene id', () => pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar plan",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"descripcion\": \"Acceso general + 1 clase grupal semanal\",\n  \"estado\": \"Activa\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/planes/editar?id={{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "planes", "editar"],
+              "query": [{ "key": "id", "value": "{{planId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar plan",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/planes/eliminar?id={{planId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "planes", "eliminar"],
+              "query": [{ "key": "id", "value": "{{planId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Membresías",
+      "item": [
+        {
+          "name": "Listar membresías",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/membresias/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "membresias", "listar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar membresía",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_plan\": {{planId}},\n  \"monto_pagado\": 299.99,\n  \"descuento_aplicado\": 0,\n  \"estado\": \"Activa\",\n  \"notas\": \"Incluye acceso a asistente virtual\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/membresias/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "membresias", "guardar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);",
+                  "pm.test('Membresía creada tiene id', () => pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar membresía",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"Vencida\",\n  \"notas\": \"Renovar con descuento\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/membresias/editar?id={{membresiaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "membresias", "editar"],
+              "query": [{ "key": "id", "value": "{{membresiaId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar membresía",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/membresias/eliminar?id={{membresiaId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "membresias", "eliminar"],
+              "query": [{ "key": "id", "value": "{{membresiaId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pagos",
+      "item": [
+        {
+          "name": "Listar pagos",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/pagos/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "pagos", "listar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Guardar pago",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_membresia\": {{membresiaId}},\n  \"metodo_pago\": \"Efectivo\",\n  \"referencia\": \"Cj-2025-0001\",\n  \"notas\": \"Pago en caja\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/pagos/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "pagos", "guardar"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.code === 201);",
+                  "pm.test('Pago creado tiene id', () => pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Editar pago",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodo_pago\": \"Transferencia\",\n  \"notas\": \"Ref. TRANS-555\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/pagos/editar?id={{pagoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "pagos", "editar"],
+              "query": [{ "key": "id", "value": "{{pagoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar pago",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/pagos/eliminar?id={{pagoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "pagos", "eliminar"],
+              "query": [{ "key": "id", "value": "{{pagoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Subir comprobante",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "multipart/form-data" }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "comprobante", "type": "file", "src": "" }]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/pagos/pagos/comprobante?id={{pagoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "pagos", "pagos", "comprobante"],
+              "query": [{ "key": "id", "value": "{{pagoId}}" }]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.code === 200);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "planId", "value": "1" },
+    { "key": "membresiaId", "value": "1" },
+    { "key": "pagoId", "value": "1" }
+  ]
+}
