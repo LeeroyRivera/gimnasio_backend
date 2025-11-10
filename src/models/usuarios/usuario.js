@@ -46,6 +46,7 @@ const Usuario = sequelize.define(
     foto_perfil: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      defaultValue: "../../../public/img/placeholders/placeholder-usuario.png",
     },
     username: {
       type: DataTypes.STRING(50),
