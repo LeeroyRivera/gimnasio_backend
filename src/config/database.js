@@ -7,4 +7,4 @@ const db = new sequelize(process.env.DBNAME, process.env.DBUSER, process.env.DBP
   protocol: 'mysql',
   logging: false
 });
-module.exports = db;
+module.exports = db;*/
