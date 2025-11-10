@@ -1,12 +1,11 @@
-require('dotenv').config();
-const express = require('express');
-const morgan = require('morgan');
-const path = require('path');
 require("dotenv").config();
-
+const express = require("express");
+const morgan = require("morgan");
+const path = require("path");
 const db = require("./src/config/database");
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('./src/config/swagger');
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./src/config/swagger");
+
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
 require("./src/models/usuarios/usuario");
@@ -51,26 +50,30 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.set('port', process.env.PORT || 3000);
+app.set("port", process.env.PORT || 3000);
 // Rutas
-app.use('/api/pagos/planes', require('./src/rutas/pagos/rutaPlanMembresia'));
-app.use('/api/pagos/membresias', require('./src/rutas/pagos/rutaMembresia'));
-app.use('/api/pagos/pagos', require('./src/rutas/pagos/rutaPago'));
-app.use('/api/inventario/categoria', require('./src/rutas/inventario/rutaCategoria'));
-app.use('/api/inventario/equipo', require('./src/rutas/inventario/rutaEquipo'));
-app.use('/api/inventario/mantenimiento', require('./src/rutas/inventario/rutaMantenimiento'));
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get('/swagger.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
+app.use("/api/pagos/planes", require("./src/rutas/pagos/rutaPlanMembresia"));
+app.use("/api/pagos/membresias", require("./src/rutas/pagos/rutaMembresia"));
+app.use("/api/pagos/pagos", require("./src/rutas/pagos/rutaPago"));
+app.use(
+  "/api/inventario/categoria",
+  require("./src/rutas/inventario/rutaCategoria")
+);
+app.use("/api/inventario/equipo", require("./src/rutas/inventario/rutaEquipo"));
+app.use(
+  "/api/inventario/mantenimiento",
+  require("./src/rutas/inventario/rutaMantenimiento")
+);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get("/swagger.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
 
+app.use("/api/imagenes", express.static(path.join(__dirname, "public/img")));
 
-app.use('/api/imagenes', 
-  express.static(path.join(__dirname, 'public/img')));
-
-app.listen(app.get('port'), () => {
-  console.log(`Server listening on http://localhost:${app.get('port')}`);
+app.listen(app.get("port"), () => {
+  console.log(`Server listening on http://localhost:${app.get("port")}`);
 });
 
 app.get("/", (req, res) => {
