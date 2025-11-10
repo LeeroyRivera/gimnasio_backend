@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-const moment = require('moment');
-
 const PlanMembresia = sequelize.define('PlanMembresia', {
   nombre_plan: {
     type: DataTypes.STRING(100),
