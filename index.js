@@ -1,7 +1,8 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
-require('dotenv').config();
+
 
 const db = require('./src/config/database');
 
@@ -34,7 +35,8 @@ require('./src/models/asistente_virtual/ejercicio');
 require('./src/models/asistente_virtual/rutina');
 require('./src/models/asistente_virtual/rutina_ejercicio');
 require('./src/models/asistente_virtual/progreso_cliente');
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./src/config/swagger');
 
 db.authenticate().then(async (data) => {
 
@@ -89,9 +91,17 @@ app.set('port', process.env.PORT || 3000);
 app.use('/api/inventario/categoria', require('./src/rutas/inventario/rutaCategoria'));
 app.use('/api/inventario/equipo', require('./src/rutas/inventario/rutaEquipo'));
 app.use('/api/inventario/mantenimiento', require('./src/rutas/inventario/rutaMantenimiento'));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+
+
 app.use('/api/imagenes', 
   express.static(path.join(__dirname, 'public/img')));
 
+ 
 app.listen(app.get('port'), () => {
   console.log(`Server listening on http://localhost:${app.get('port')}`);
 });
