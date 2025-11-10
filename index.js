@@ -7,9 +7,7 @@ const db = require("./src/config/database");
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
 require("./src/models/usuarios/usuario");
-require("./src/models/usuarios/usuario_rol");
 require("./src/models/usuarios/cliente");
-require("./src/models/usuarios/personal");
 require("./src/models/usuarios/sesion");
 
 // Importar modelos de pagos

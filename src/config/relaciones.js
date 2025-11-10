@@ -1,7 +1,6 @@
 const Rol = require("../models/usuarios/rol");
 const Usuario = require("../models/usuarios/usuario");
 const Cliente = require("../models/usuarios/cliente");
-const Personal = require("../models/usuarios/personal");
 const Sesion = require("../models/usuarios/sesion");
 
 const PlanMembresia = require("../models/pagos/plan_membresia");
@@ -29,9 +28,6 @@ module.exports = function establecerRelaciones() {
   // Cliente / Personal (1:1 con Usuario)
   Usuario.hasOne(Cliente, { foreignKey: "id_usuario", onDelete: "CASCADE" });
   Cliente.belongsTo(Usuario, { foreignKey: "id_usuario" });
-
-  Usuario.hasOne(Personal, { foreignKey: "id_usuario", onDelete: "CASCADE" });
-  Personal.belongsTo(Usuario, { foreignKey: "id_usuario" });
 
   // Sesiones (1:N Usuario)
   Usuario.hasMany(Sesion, { foreignKey: "id_usuario" });
