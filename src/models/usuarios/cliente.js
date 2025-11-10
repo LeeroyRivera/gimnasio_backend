@@ -17,11 +17,6 @@ const Cliente = sequelize.define(
         key: "id_usuario",
       },
     },
-    fecha_registro: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
     tipo_sangre: {
       type: DataTypes.STRING(3),
       allowNull: true,

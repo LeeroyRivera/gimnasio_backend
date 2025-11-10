@@ -66,10 +66,6 @@ const Usuario = sequelize.define(
       allowNull: false,
       defaultValue: DataTypes.NOW,
     },
-    ultimo_acceso: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
   },
   {
     tableName: "usuarios",
