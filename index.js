@@ -51,19 +51,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.set("port", process.env.PORT || 3000);
-// Rutas
-app.use("/api/pagos/planes", require("./src/rutas/pagos/rutaPlanMembresia"));
-app.use("/api/pagos/membresias", require("./src/rutas/pagos/rutaMembresia"));
-app.use("/api/pagos/pagos", require("./src/rutas/pagos/rutaPago"));
-app.use(
-  "/api/inventario/categoria",
-  require("./src/rutas/inventario/rutaCategoria")
-);
-app.use("/api/inventario/equipo", require("./src/rutas/inventario/rutaEquipo"));
-app.use(
-  "/api/inventario/mantenimiento",
-  require("./src/rutas/inventario/rutaMantenimiento")
-);
+
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.get("/swagger.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
@@ -85,5 +73,19 @@ app.use("/api/rol", require("./src/routes/usuarios/rutasRol"));
 app.use("/api/sesion", require("./src/routes/usuarios/rutasSesion"));
 app.use("/api/cliente", require("./src/routes/usuarios/rutasCliente"));
 app.use("/api/autenticacion", require("./src/routes/authRutas"));
-
+app.use("/api/pagos/planes", require("./src/routes/pagos/rutaPlanMembresia"));
+app.use("/api/pagos/membresias", require("./src/routes/pagos/rutaMembresia"));
+app.use("/api/pagos/pagos", require("./src/routes/pagos/rutaPago"));
+app.use(
+  "/api/inventario/categoria",
+  require("./src/routes/inventario/rutaCategoria")
+);
+app.use(
+  "/api/inventario/equipo",
+  require("./src/routes/inventario/rutaEquipo")
+);
+app.use(
+  "/api/inventario/mantenimiento",
+  require("./src/routes/inventario/rutaMantenimiento")
+);
 module.exports = app;

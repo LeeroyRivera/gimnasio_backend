@@ -1,40 +1,39 @@
-const swaggerJsdoc = require('swagger-jsdoc');
-const path = require('path');
+const swaggerJsdoc = require("swagger-jsdoc");
+const path = require("path");
 
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: "3.0.0",
     info: {
-      title: 'API-SEMINARIO',
-      version: '1.0.0',
-      description: 'API del sistema emplo de la clase de seminario',
+      title: "API-SEMINARIO",
+      version: "1.0.0",
+      description: "API del sistema emplo de la clase de seminario",
       contact: {
-        email: 'desofiwfacturacion@gmail.com'
+        email: "desofiwfacturacion@gmail.com",
       },
     },
     servers: [
-        {
-          url: 'http://localhost:'+ process.env.PORT +'/api', // URL del servidor
-          description: 'Servidor local',
-        },
+      {
+        url: "http://localhost:" + 3000 + "/api", // URL del servidor
+        description: "Servidor local",
+      },
     ],
     components: {
       securitySchemes: {
-          BearerAuth: {
-              type: 'http',
-              scheme: 'bearer',
-              bearerFormat: 'JWT'
-          }
+        BearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
       },
-      
     },
     security: [
-        {
-            BearerAuth: []
-        }
+      {
+        BearerAuth: [],
+      },
     ],
   },
-  apis: [`${path.join(__dirname, "../rutas/**/*.js")}`],
+  apis: [`${path.join(__dirname, "../routes/**/*.js")}`],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
