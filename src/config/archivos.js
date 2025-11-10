@@ -42,7 +42,6 @@ exports.uploadImagenEquipos = multer({
     },
 }).single("imagen");
 
-
 const diskStoragePagos = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, path.join(__dirname, "../../public/img/pagos"));  // carpeta destino

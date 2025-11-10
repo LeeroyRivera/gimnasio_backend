@@ -1,0 +1,377 @@
+{
+  "info": {
+    "_postman_id": "b3a9b6b8-3b1b-49f2-81dd-gimnasio-coleccion",
+    "name": "Gimnasio API - Colección completa",
+    "description": "Colección para probar los endpoints de Usuario, Rol, Usuario-Rol, Sesiones y Auth.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "ultimo_id_usuario", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /api/auth/register",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const ts = Date.now();",
+                  "pm.variables.set('email', `tester_${ts}@example.com`);",
+                  "pm.variables.set('username', `user_${ts}`);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "let json = pm.response.json();",
+                  "pm.test('Usuario sin password_hash', () => pm.expect(json.usuario || json).to.not.have.property('password_hash'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"López\",\n  \"email\": \"{{email}}\",\n  \"username\": \"{{username}}\",\n  \"password\": \"Secreta1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/auth/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Recibe token', () => pm.expect(json).to.have.property('token'));",
+                  "pm.collectionVariables.set('token', json.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"Secreta1234\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /api/auth/perfil",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/perfil",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "perfil"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuario",
+      "item": [
+        {
+          "name": "GET /api/usuario/listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario", "listar"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/usuario/activo",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario/activo",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario", "activo"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/usuario/registro",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const ts = Date.now();",
+                  "pm.variables.set('email', `tester_${ts}@example.com`);",
+                  "pm.variables.set('username', `user_${ts}`);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.response.to.have.status(201));",
+                  "let json = pm.response.json();",
+                  "pm.test('Devuelve usuario y cliente', () => { pm.expect(json).to.have.property('usuario'); pm.expect(json).to.have.property('cliente'); });",
+                  "pm.test('No expone password_hash', () => pm.expect(json.usuario).to.not.have.property('password_hash'));",
+                  "pm.collectionVariables.set('ultimo_id_usuario', json.usuario.id_usuario);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario/registro",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario", "registro"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_rol\": 1,\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Pérez\",\n  \"email\": \"{{email}}\",\n  \"telefono\": \"55512345\",\n  \"fecha_nacimiento\": \"1990-05-10\",\n  \"genero\": \"M\",\n  \"foto_perfil\": null,\n  \"username\": \"{{username}}\",\n  \"password\": \"Secreta1234\",\n  \"cliente\": {\n    \"tipo_sangre\": \"O+\",\n    \"peso_actual\": 80.5,\n    \"altura\": 1.78,\n    \"condiciones_medicas\": \"Ninguna\",\n    \"contacto_emergencia\": \"María Pérez\",\n    \"telefono_emergencia\": \"55588899\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /api/usuario/actualizar?id=...",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario/actualizar?id={{ultimo_id_usuario}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario", "actualizar"],
+              "query": [{ "key": "id", "value": "{{ultimo_id_usuario}}" }]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"55599900\",\n  \"estado\": \"activo\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /api/usuario/eliminar?id=...",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario/eliminar?id={{ultimo_id_usuario}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario", "eliminar"],
+              "query": [{ "key": "id", "value": "{{ultimo_id_usuario}}" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rol",
+      "item": [
+        {
+          "name": "GET /api/rol/listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rol/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rol", "listar"]
+            }
+          }
+        },
+        {
+          "name": "POST /api/rol/guardar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rol/guardar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rol", "guardar"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Admin\",\n  \"descripcion\": \"Rol administrador\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT /api/rol/actualizar?id=...",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/rol/actualizar?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rol", "actualizar"],
+              "query": [{ "key": "id", "value": "1" }]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"SuperAdmin\",\n  \"descripcion\": \"Rol con más privilegios\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE /api/rol/eliminar?id=...",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/rol/eliminar?id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rol", "eliminar"],
+              "query": [{ "key": "id", "value": "1" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usuario-Rol",
+      "item": [
+        {
+          "name": "POST /api/usuario-rol/asignar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/asignar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "asignar"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_usuario\": {{ultimo_id_usuario}},\n  \"id_rol\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /api/usuario-rol/usuario/:id_usuario",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/usuario/{{ultimo_id_usuario}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "usuario", "{{ultimo_id_usuario}}"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/usuario-rol/rol/:id_rol",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/rol/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "rol", "1"]
+            }
+          }
+        },
+        {
+          "name": "GET /api/usuario-rol/verificar?id_usuario=&id_rol=",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/verificar?id_usuario={{ultimo_id_usuario}}&id_rol=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "verificar"],
+              "query": [
+                { "key": "id_usuario", "value": "{{ultimo_id_usuario}}" },
+                { "key": "id_rol", "value": "1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT /api/usuario-rol/usuario/:id_usuario (reemplazar roles)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/usuario/{{ultimo_id_usuario}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "usuario", "{{ultimo_id_usuario}}"]
+            },
+            "body": { "mode": "raw", "raw": "{\n  \"roles\": [1]\n}" }
+          }
+        },
+        {
+          "name": "DELETE /api/usuario-rol/remover?id_usuario=&id_rol=",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/remover?id_usuario={{ultimo_id_usuario}}&id_rol=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "remover"],
+              "query": [
+                { "key": "id_usuario", "value": "{{ultimo_id_usuario}}" },
+                { "key": "id_rol", "value": "1" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /api/usuario-rol/listar",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usuario-rol/listar",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usuario-rol", "listar"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sesiones",
+      "item": [
+        {
+          "name": "GET /api/sesion/sesiones?id_usuario=",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/sesion/sesiones?id_usuario={{ultimo_id_usuario}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sesion", "sesiones"],
+              "query": [
+                { "key": "id_usuario", "value": "{{ultimo_id_usuario}}" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
