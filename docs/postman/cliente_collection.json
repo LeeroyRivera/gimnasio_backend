@@ -1,0 +1,44 @@
+{
+  "info": {
+    "_postman_id": "d9f4f2b2-cliente-coleccion",
+    "name": "Gimnasio API - Cliente",
+    "description": "Colección para probar endpoints del módulo Cliente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "ultimo_id_usuario", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "PUT /api/cliente/actualizar?id=...",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('200 or 404/400', function () {",
+              "  pm.expect([200,400,404]).to.include(pm.response.code);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/cliente/actualizar?id={{ultimo_id_usuario}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "cliente", "actualizar"],
+          "query": [{ "key": "id", "value": "{{ultimo_id_usuario}}" }]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"peso_actual\": 82.3,\n  \"altura\": 1.80,\n  \"telefono_emergencia\": \"555123456\"\n}"
+        }
+      }
+    }
+  ]
+}
