@@ -5,7 +5,8 @@ const path = require('path');
 require("dotenv").config();
 
 const db = require("./src/config/database");
-
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./src/config/swagger');
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
 require("./src/models/usuarios/usuario");
