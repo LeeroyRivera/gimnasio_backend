@@ -54,22 +54,25 @@ router.post("/login", validacionesLogin, async (req, res) => {
       return res.status(401).json({ mensaje: "Contraseña incorrecta" });
     }
 
-    const asignaciones = await UsuarioRol.findAll({
-      // Obtener roles del usuario
-      where: { id_usuario: usuario.id_usuario },
-      include: [{ model: Rol, attributes: ["id_rol", "nombre"] }],
-      attributes: [],
+    const rol = await Rol.findOne({
+      where: { id_rol: usuario.id_rol },
+      attributes: ["nombre"],
     });
 
-    const roles = asignaciones.map((a) => a.Rol.nombre); // mapear solo los nombres de los roles
-
     const token = jwt.sign(
-      { id: usuario.id_usuario, username: usuario.username, roles },
+      { id: usuario.id_usuario, username: usuario.username, rol: rol.nombre },
       process.env.JWT_SECRET,
       {
         expiresIn: "1h",
       }
     );
+
+    // guardar sesión
+    await Sesion.create({
+      id_usuario: usuario.id_usuario,
+      access_token: token,
+    });
+
     return res.json({ token });
   } catch (error) {
     return res.status(500).json({ mensaje: "Error en el servidor" });

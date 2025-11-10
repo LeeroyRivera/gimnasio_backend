@@ -28,22 +28,26 @@ const Sesion = sequelize.define(
     fecha_inicio: {
       type: DataTypes.DATE,
       allowNull: false,
+      defaultValue: DataTypes.NOW,
     },
-    fecha_cierre: {
+    fecha_expiracion: {
       type: DataTypes.DATE,
       allowNull: true,
     },
     estado: {
       type: DataTypes.ENUM("activa", "cerrada", "expirada"),
       allowNull: false,
+      defaultValue: "activa",
     },
     ip: {
       type: DataTypes.STRING(45),
       allowNull: true,
+      defaultValue: "localhost",
     },
     dispositivo: {
       type: DataTypes.STRING(255),
       allowNull: true,
+      defaultValue: "Postman",
     },
   },
   {
@@ -51,5 +55,11 @@ const Sesion = sequelize.define(
     timestamps: false,
   }
 );
+
+Sesion.beforeCreate((sesion, options) => {
+  sesion.fecha_expiracion = new Date(
+    sesion.fecha_inicio.getTime() + 60 * 60 * 1000 //60 segundos * 60 minutos * 1000 milisegundos = 3,600,000 ms
+  );
+});
 
 module.exports = Sesion;
