@@ -50,9 +50,12 @@ db.sync({ alter: true })
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.set("port", process.env.PORT || 3000);
 
+app.set('port', process.env.PORT || 3000);
 // Rutas
+app.use('/api/pagos/planes', require('./src/rutas/pagos/rutaPlanMembresia'));
+app.use('/api/pagos/membresias', require('./src/rutas/pagos/rutaMembresia'));
+app.use('/api/pagos/pagos', require('./src/rutas/pagos/rutaPago'));
 app.use('/api/inventario/categoria', require('./src/rutas/inventario/rutaCategoria'));
 app.use('/api/inventario/equipo', require('./src/rutas/inventario/rutaEquipo'));
 app.use('/api/inventario/mantenimiento', require('./src/rutas/inventario/rutaMantenimiento'));
@@ -66,7 +69,6 @@ app.get('/swagger.json', (req, res) => {
 app.use('/api/imagenes', 
   express.static(path.join(__dirname, 'public/img')));
 
- 
 app.listen(app.get('port'), () => {
   console.log(`Server listening on http://localhost:${app.get('port')}`);
 });
