@@ -18,7 +18,7 @@ const Cliente = sequelize.define(
       },
     },
     tipo_sangre: {
-      type: DataTypes.STRING(3),
+      type: DataTypes.STRING(5),
       allowNull: true,
     },
     peso_actual: {
