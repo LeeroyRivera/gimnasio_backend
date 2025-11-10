@@ -38,7 +38,7 @@ const app = express();
 
 db.sync({ alter: true })
   .then(() => {
-    console.log("Conneccion a la base de datos exitosa");
+    console.log("Conexion a la base de datos exitosa");
   })
   .catch((error) => {
     console.error("Error al conectar a la base de datos:", error);
@@ -59,5 +59,8 @@ app.get("/", (req, res) => {
 
 app.use("/api/usuario", require("./src/routes/usuarios/rutasUsuario"));
 app.use("/api/rol", require("./src/routes/usuarios/rutasRol"));
+app.use("/api/sesion", require("./src/routes/usuarios/rutasSesion"));
+app.use("/api/cliente", require("./src/routes/usuarios/rutasCliente"));
+app.use("/api/autenticacion", require("./src/routes/authRutas"));
 
 module.exports = app;

@@ -6,7 +6,8 @@ const { body } = require("express-validator");
 const { Op } = require("sequelize");
 const Rol = require("../models/usuarios/rol");
 const Usuario = require("../models/usuarios/usuario");
-const UsuarioRol = require("../models/usuarios/usuario_rol");
+const Sesion = require("../models/usuarios/sesion");
+const { validationResult } = require("express-validator");
 
 const router = express.Router();
 const validacionesLogin = [
@@ -14,15 +15,6 @@ const validacionesLogin = [
     .notEmpty()
     .withMessage("El nombre de usuario es obligatorio"),
   body("password").notEmpty().withMessage("La contraseña es obligatoria"),
-];
-const validacionesRegistro = [
-  body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
-  body("apellido").notEmpty().withMessage("El apellido es obligatorio"),
-  body("email").isEmail().withMessage("El email no es válido"),
-  body("username")
-    .notEmpty()
-    .withMessage("El nombre de usuario es obligatorio"),
-  body("password_hash").notEmpty().withMessage("La contraseña es obligatoria"),
 ];
 
 router.post("/login", validacionesLogin, async (req, res) => {

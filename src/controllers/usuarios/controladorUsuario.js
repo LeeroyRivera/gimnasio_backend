@@ -22,11 +22,9 @@ exports.obtenerUsuarioPorUsername = async (req, res) => {
 
     res.status(200).json(usuario);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        error: "Error al obtener usuario por nombre de usuario" + error,
-      });
+    res.status(500).json({
+      error: "Error al obtener usuario por nombre de usuario" + error,
+    });
   }
 };
 
@@ -43,7 +41,6 @@ exports.obtenerUsuariosActivos = async (req, res) => {
 
 exports.guardarUsuario = async (req, res) => {
   const errores = validationResult(req);
-  const clienteData = req.body.cliente;
   if (!errores.isEmpty()) {
     return res.status(400).json({ errores: errores.array() });
   }
@@ -59,8 +56,19 @@ exports.guardarUsuario = async (req, res) => {
       genero,
       foto_perfil,
       username,
-      password_hash,
+      password,
+      cliente,
     } = req.body;
+
+    // Validar existencia de cliente
+    /*if (!cliente || typeof cliente !== "object") {
+      return res
+        .status(400)
+        .json({ error: "Objeto 'cliente' faltante o inválido" });
+    }*/
+
+    // Hashear password enviada
+    const password_hash = await argon2.hash(password);
 
     const nuevoUsuario = await Usuario.create({
       id_rol,
@@ -75,16 +83,17 @@ exports.guardarUsuario = async (req, res) => {
       password_hash,
     });
 
-    if (!clienteData) {
-      return res.status(500).json("Datos de cliente faltantes");
-    }
-
     const nuevoCliente = await Cliente.create({
-      ...clienteData,
+      ...cliente,
       id_usuario: nuevoUsuario.id_usuario,
     });
 
-    res.status(201).json({ Usuario: nuevoUsuario, Cliente: nuevoCliente });
+    // Ocultar hash en respuesta
+    /*const { password_hash: _, ...usuarioSeguro } = nuevoUsuario.toJSON
+      ? nuevoUsuario.toJSON()
+      : nuevoUsuario;*/
+
+    res.status(201).json({ usuario: nuevoUsuario, cliente: nuevoCliente });
   } catch (error) {
     res.status(500).json({ error: "Error al guardar usuario" + error });
   }
@@ -103,11 +112,17 @@ exports.actualizarUsuario = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
+    // Si llega password, re-hashear y mover a password_hash
+    if (req.body.password) {
+      req.body.password_hash = await argon2.hash(req.body.password);
+      delete req.body.password;
+    }
+
     await usuario.update({
       ...req.body,
     });
 
-    res.status(200).json(usuario);
+    res.status(200).json("Usuario actualizado correctamente");
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar usuario" + error });
   }

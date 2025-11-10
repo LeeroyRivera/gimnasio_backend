@@ -32,3 +32,5 @@ router.put(
     .withMessage("El teléfono de emergencia debe ser una cadena de texto"),
   controladorCliente.actualizarCliente
 );
+
+module.exports = router;

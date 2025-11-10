@@ -12,6 +12,7 @@ const Cliente = sequelize.define(
     id_usuario: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: true,
       references: {
         model: "usuarios",
         key: "id_usuario",
