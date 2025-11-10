@@ -1,5 +1,6 @@
 const Usuario = require("../../models/usuarios/usuario");
 const { validationResult } = require("express-validator");
+const Cliente = require("../../models/usuarios/cliente");
 const argon2 = require("argon2");
 
 exports.listarTodosUsuarios = async (req, res) => {
@@ -7,8 +8,7 @@ exports.listarTodosUsuarios = async (req, res) => {
     const usuarios = await Usuario.findAll();
     res.status(200).json(usuarios);
   } catch (error) {
-    console.error("Error al listar usuarios:", error);
-    res.status(500).json({ error: "Error al listar usuarios" });
+    res.status(500).json({ error: "Error al listar usuarios" + error });
   }
 };
 
@@ -22,10 +22,11 @@ exports.obtenerUsuarioPorUsername = async (req, res) => {
 
     res.status(200).json(usuario);
   } catch (error) {
-    console.error("Error al obtener usuario por nombre de usuario:", error);
     res
       .status(500)
-      .json({ error: "Error al obtener usuario por nombre de usuario" });
+      .json({
+        error: "Error al obtener usuario por nombre de usuario" + error,
+      });
   }
 };
 
@@ -34,13 +35,15 @@ exports.obtenerUsuariosActivos = async (req, res) => {
     const usuarios = await Usuario.findAll({ where: { estado: "activo" } });
     res.status(200).json(usuarios);
   } catch (error) {
-    console.error("Error al obtener usuarios activos:", error);
-    res.status(500).json({ error: "Error al obtener usuarios activos" });
+    res
+      .status(500)
+      .json({ error: "Error al obtener usuarios activos" + error });
   }
 };
 
 exports.guardarUsuario = async (req, res) => {
   const errores = validationResult(req);
+  const clienteData = req.body.cliente;
   if (!errores.isEmpty()) {
     return res.status(400).json({ errores: errores.array() });
   }
@@ -72,10 +75,18 @@ exports.guardarUsuario = async (req, res) => {
       password_hash,
     });
 
-    res.status(201).json(nuevoUsuario);
+    if (!clienteData) {
+      return res.status(500).json("Datos de cliente faltantes");
+    }
+
+    const nuevoCliente = await Cliente.create({
+      ...clienteData,
+      id_usuario: nuevoUsuario.id_usuario,
+    });
+
+    res.status(201).json({ Usuario: nuevoUsuario, Cliente: nuevoCliente });
   } catch (error) {
-    console.error("Error al guardar usuario:", error);
-    res.status(500).json({ error: "Error al guardar usuario" });
+    res.status(500).json({ error: "Error al guardar usuario" + error });
   }
 };
 
@@ -98,8 +109,7 @@ exports.actualizarUsuario = async (req, res) => {
 
     res.status(200).json(usuario);
   } catch (error) {
-    console.error("Error al actualizar usuario:", error);
-    res.status(500).json({ error: "Error al actualizar usuario" });
+    res.status(500).json({ error: "Error al actualizar usuario" + error });
   }
 };
 
@@ -115,7 +125,6 @@ exports.eliminarUsuario = async (req, res) => {
     await usuario.update({ estado: "inactivo" });
     res.status(204).send();
   } catch (error) {
-    console.error("Error al eliminar usuario:", error);
-    res.status(500).json({ error: "Error al eliminar usuario" });
+    res.status(500).json({ error: "Error al eliminar usuario" + error });
   }
 };
