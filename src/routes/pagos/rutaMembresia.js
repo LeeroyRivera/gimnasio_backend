@@ -36,27 +36,50 @@ routes.get('/listar', controladorMembresia.listar);
  *           schema:
  *             type: object
  *             properties:
+ *               id_cliente:
+ *                 type: integer
+ *                 description: ID del cliente asociado
+ *                 example: 0
  *               id_plan:
  *                 type: integer
- *               monto_pagado:
- *                 type: number
- *                 format: float
- *               descuento_aplicado:
- *                 type: number
- *                 format: float
+ *                 description: ID del plan de membresía
+ *                 example: 0
+ *               fecha_inicio:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Fecha de inicio de la membresía
+ *                 example: "2025-11-01 08:00:00"
+ *               fecha_vencimiento:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Fecha de vencimiento de la membresía
+ *                 example: "2025-12-01 08:00:00"
  *               estado:
  *                 type: string
  *                 enum: ['Activa','Vencida','suspendida','Cancelada']
+ *                 description: Estado de la membresía
+ *                 example: "Activa"
+ *               monto_pagado:
+ *                 type: number
+ *                 format: float
+ *                 description: Monto pagado por el cliente
+ *                 example: 0
+ *               descuento_aplicado:
+ *                 type: number
+ *                 format: float
+ *                 description: Descuento aplicado (%)
+ *                 example: 0
  *               notas:
  *                 type: string
+ *                 description: Observaciones
+ *                 example: "Membresía con descuento del 0%."
  *     responses:
- *       200:
+ *       201:
  *         description: Membresía guardada exitosamente
  */
 routes.post('/guardar',
+  body("id_cliente").notEmpty().isInt().withMessage("Debe especificar el cliente"),
   body("id_plan").notEmpty().isInt().withMessage("Debe especificar el plan"),
-  body("monto_pagado").notEmpty().isDecimal().withMessage("Debe enviar el monto pagado"),
-  body("estado").optional().isIn(['Activa','Vencida','suspendida','Cancelada']).withMessage("Estado no válido"),
   controladorMembresia.guardar
 );
 

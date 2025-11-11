@@ -2,12 +2,17 @@ const { Model } = require('sequelize');
 const Membresia = require('../../models/pagos/membresia');
 const PlanMembresia = require('../../models/pagos/plan_membresia');
 const { validationResult } = require('express-validator');
-
+const Cliente = require('../../models/usuarios/cliente');
 
 exports.listar = async (req, res) => {
   try {
     const membresias = await Membresia.findAll({
       include: [
+         {
+          model: Cliente,
+          as: 'cliente',
+          attributes: ['id_cliente', 'nombre', 'apellido']     
+        },
         {
           model: PlanMembresia,
           as: 'plan',
@@ -15,7 +20,9 @@ exports.listar = async (req, res) => {
         }
       ]
     });
+
     res.status(200).json(membresias);
+
   } catch (error) {
     res.status(500).json({
       message: 'Error al listar las membresías',
@@ -23,14 +30,6 @@ exports.listar = async (req, res) => {
     });
   }
 };
-/*exports.listar = async (req, res) => {
-  try {
-    const membresias = await Membresia.findAll();
-    res.status(200).json(membresias);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al listar las membresías', error: error.message });
-  }
-};*/
 
 exports.guardar = async (req, res) => {
   const errores = validationResult(req);
@@ -69,7 +68,27 @@ exports.guardar = async (req, res) => {
       notas
     });
 
-    res.status(201).json(nuevaMembresia);
+     const membresiaConDatos = await Membresia.findOne({
+      where: { id: nuevaMembresia.id },
+      include: [
+        {
+          model: Cliente,
+          as: "cliente",
+          attributes: ["id_cliente", "nombre", "apellido"]
+        },
+        {
+          model: PlanMembresia,
+          as: "plan",
+          attributes: ["id", "nombre_plan", "descripcion", "duracion_dias"]
+        }
+      ]
+    });
+
+    res.status(201).json({
+      message: "Membresía registrada correctamente",
+      data: membresiaConDatos
+    });
+
   } catch (error) {
     res.status(500).json({ message: 'Error al guardar la membresía', error: error.message });
   }
@@ -133,6 +152,11 @@ exports.editar = async (req, res) => {
     const membresiaActualizada = await Membresia.findOne({
       where: { id: id },
       include: [
+        {
+          model: Cliente,
+          as: "cliente",
+          attributes: ["id_cliente", "nombre", "apellido"]
+        },
         {
           model: PlanMembresia,
           as: 'plan',
