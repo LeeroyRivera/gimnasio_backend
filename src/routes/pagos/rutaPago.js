@@ -15,11 +15,108 @@ const modeloPago = require("../../models/pagos/pago");
  * @swagger
  * /pagos/pagos/listar:
  *   get:
- *     summary: Obtiene la lista de pagos
+ *     summary: Obtiene la lista de pagos junto con la información de la membresía, cliente y plan
  *     tags: [Pagos]
  *     responses:
  *       200:
  *         description: Lista de pagos obtenida con éxito
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: ID del pago
+ *                     example: 1
+ *                   monto:
+ *                     type: number
+ *                     format: float
+ *                     description: Monto pagado
+ *                     example: 640.00
+ *                   metodo_pago:
+ *                     type: string
+ *                     enum: [Efectivo, Transferencia, Tarjeta]
+ *                     description: Método de pago utilizado
+ *                     example: Tarjeta
+ *                   fecha_pago:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Fecha del pago
+ *                     example: "2025-11-11T16:20:11.000Z"
+ *                   referencia:
+ *                     type: string
+ *                     description: Código de referencia del pago
+ *                     example: "PAG-20251111-DVK6ZL"
+ *                   notas:
+ *                     type: string
+ *                     description: Observaciones asociadas al pago
+ *                     example: "Pago con tarjeta en recepción."
+ *                   detalle_descuento:
+ *                     type: string
+ *                     description: Porcentaje o detalle de descuento aplicado
+ *                     example: "20"
+ *                   procesadoPor:
+ *                     type: object
+ *                     nullable: true
+ *                     description: Usuario que procesó el pago (si aplica)
+ *                     properties:
+ *                       username:
+ *                         type: string
+ *                         description: Usuario que registró el pago
+ *                         example: "admin01"
+ *                   membresia:
+ *                     type: object
+ *                     description: Información de la membresía asociada al pago
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         description: ID de la membresía
+ *                         example: 1
+ *                       fecha_inicio:
+ *                         type: string
+ *                         description: Fecha de inicio de la membresía
+ *                         example: "2025-11-01T14:00:00.000Z"
+ *                       fecha_vencimiento:
+ *                         type: string
+ *                         description: Fecha de vencimiento de la membresía
+ *                         example: "2025-12-01T14:00:00.000Z"
+ *                       estado:
+ *                         type: string
+ *                         enum: [Activa, Vencida, Suspendida, Cancelada]
+ *                         description: Estado de la membresía
+ *                         example: "Activa"
+ *                       cliente:
+ *                         type: object
+ *                         description: Información del cliente asociado
+ *                         properties:
+ *                           id_cliente:
+ *                             type: integer
+ *                             example: 1
+ *                           nombre:
+ *                             type: string
+ *                             example: "Ana"
+ *                           apellido:
+ *                             type: string
+ *                             example: "Pérez"
+ *                       plan:
+ *                         type: object
+ *                         description: Información del plan de membresía
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           nombre_plan:
+ *                             type: string
+ *                             example: "Plan Mensual Premium"
+ *                           descripcion:
+ *                             type: string
+ *                             example: "Acceso completo al gimnasio, entrenador y asistente virtual."
+ *                           duracion_dias:
+ *                             type: integer
+ *                             example: 30
  */
 routes.get('/listar', controladorPago.listar);
 

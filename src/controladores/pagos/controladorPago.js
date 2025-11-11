@@ -16,30 +16,24 @@ exports.listar = async (req, res) => {
         {
           model: Membresia,
           as: "membresia",
-          attributes: ["id", "fecha_inicio", "fecha_vencimiento", "estado"],
+          attributes: ["id", "monto_pagado", "fecha_inicio", "fecha_vencimiento", "estado"],
           include: [
+             {
+              model: Cliente,
+              as: "cliente",
+              attributes: ["id_cliente", "nombre", "apellido"] // ahora viene desde CLIENTE
+            },
             {
               model: PlanMembresia,
               as: "plan",
               attributes: ["id", "nombre_plan", "descripcion", "duracion_dias"]
-            },
-            {
-              model: Cliente,
-              as: "cliente",
-              include: [
-                {
-                  model: Usuario,
-                  as: "usuario",
-                  attributes: ["nombre", "apellido"]
-                }
-              ]
             }
           ]
         },
         {
           model: Usuario,
           as: "procesadoPor", // <-- Usuario que procesó el pago
-          attributes: ["nombre", "apellido"]
+          attributes: ["username"] 
         }
       ]
     });
