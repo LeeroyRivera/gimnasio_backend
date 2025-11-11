@@ -1,18 +1,18 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-//const Cliente = require('./cliente');
+const Cliente = require('../usuarios/cliente');
 const PlanMembresia = require('./plan_membresia');
 const moment = require('moment');
 
 const Membresia = sequelize.define('Membresia', {
-  /*id_cliente: {
+  id_cliente: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
       model: Cliente,
       key: 'id_cliente'
     }
-  },*/
+  },
   id_plan: {
     type: DataTypes.INTEGER,
     references: {

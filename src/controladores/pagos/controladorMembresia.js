@@ -42,7 +42,7 @@ exports.guardar = async (req, res) => {
   
   try {
     const {
-     // id_cliente,
+      id_cliente,
       id_plan,
       fecha_inicio,
       fecha_vencimiento,
@@ -59,7 +59,7 @@ exports.guardar = async (req, res) => {
     }
 
     const nuevaMembresia = await Membresia.create({
-      //id_cliente,
+      id_cliente,
       id_plan,
       fecha_inicio,
       fecha_vencimiento,
@@ -87,7 +87,7 @@ exports.editar = async (req, res) => {
   } else {
     const { id } = req.query;
     const {
-      //id_cliente,
+      id_cliente,
       id_plan,
       fecha_inicio,
       fecha_vencimiento,
@@ -98,7 +98,7 @@ exports.editar = async (req, res) => {
     } = req.body;
     
     
-    // 🔹 Verificar si la membresía existe
+    // Verificar si la membresía existe
     const membresia = await Membresia.findOne({
       where: { id: id } // <-- Usa el nombre real de tu columna
     });
@@ -107,7 +107,7 @@ exports.editar = async (req, res) => {
       return res.status(404).json({ message: 'Membresía no encontrada' });
     }
 
-    // 🔹 Verificar si el plan nuevo (si se cambia) existe
+    // Verificar si el plan nuevo (si se cambia) existe
     if (id_plan) {
       const plan = await PlanMembresia.findByPk(id_plan);
       if (!plan) {
@@ -116,7 +116,7 @@ exports.editar = async (req, res) => {
     }
    
     await Membresia.update({
-      //id_cliente,
+      id_cliente,
       id_plan,
       fecha_inicio,
       fecha_vencimiento,
