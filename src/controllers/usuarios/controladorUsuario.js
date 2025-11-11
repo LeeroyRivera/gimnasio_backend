@@ -2,6 +2,9 @@ const Usuario = require("../../models/usuarios/usuario");
 const { validationResult } = require("express-validator");
 const Cliente = require("../../models/usuarios/cliente");
 const argon2 = require("argon2");
+const {
+  notificarRegistroUsuario,
+} = require("../../services/usuarios/notificarRegistro");
 
 exports.listarTodosUsuarios = async (req, res) => {
   try {
@@ -48,8 +51,6 @@ exports.guardarUsuario = async (req, res) => {
   try {
     const {
       id_rol,
-      nombre,
-      apellido,
       email,
       telefono,
       fecha_nacimiento,
@@ -72,8 +73,6 @@ exports.guardarUsuario = async (req, res) => {
 
     const nuevoUsuario = await Usuario.create({
       id_rol,
-      nombre,
-      apellido,
       email,
       telefono,
       fecha_nacimiento,
@@ -92,6 +91,15 @@ exports.guardarUsuario = async (req, res) => {
     /*const { password_hash: _, ...usuarioSeguro } = nuevoUsuario.toJSON
       ? nuevoUsuario.toJSON()
       : nuevoUsuario;*/
+
+    // Intentar enviar correo de bienvenida sin bloquear la respuesta
+    (async () => {
+      try {
+        await notificarRegistroUsuario(nuevoUsuario, nuevoCliente);
+      } catch (e) {
+        console.error("No se pudo enviar correo de registro:", e?.message || e);
+      }
+    })();
 
     res.status(201).json({ usuario: nuevoUsuario, cliente: nuevoCliente });
   } catch (error) {
