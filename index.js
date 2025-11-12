@@ -27,19 +27,12 @@ require("./src/models/inventario/categoria_equipo");
 require("./src/models/inventario/equipo");
 require("./src/models/inventario/mantenimiento");
 
-// Importar modelos de asistente virtual
-require("./src/models/asistente_virtual/categoria_ejercicio");
-require("./src/models/asistente_virtual/ejercicio");
-require("./src/models/asistente_virtual/rutina");
-require("./src/models/asistente_virtual/rutina_ejercicio");
-require("./src/models/asistente_virtual/progreso_cliente");
-
 // Establecer relaciones
 require("./src/config/relaciones")();
 
 const app = express();
 
-db.sync({ alter: true })
+db.sync()
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
   })
@@ -120,5 +113,15 @@ app.use(
   "/api/inventario/mantenimiento",
   passport.authenticate("jwt", { session: false }),
   require("./src/routes/inventario/rutaMantenimiento")
+);
+app.use(
+  "/api/control-acceso/codigo-qr",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/control_acceso/rutaCodigoQR")
+);
+app.use(
+  "/api/control-acceso/asistencia",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/control_acceso/rutaAsistencia")
 );
 module.exports = app;
