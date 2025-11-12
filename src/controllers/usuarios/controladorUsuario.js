@@ -2,6 +2,9 @@ const Usuario = require("../../models/usuarios/usuario");
 const { validationResult } = require("express-validator");
 const Cliente = require("../../models/usuarios/cliente");
 const argon2 = require("argon2");
+const {
+  notificarRegistroUsuario,
+} = require("../../services/usuarios/notificarRegistro");
 const sequelize = require("../../config/database");
 
 exports.listarTodosUsuarios = async (req, res) => {
@@ -74,7 +77,7 @@ exports.guardarUsuario = async (req, res) => {
     }
     if (existeUsername) {
       return res
-        .status(409)
+     .status(409)
         .json({ error: "El nombre de usuario ya está en uso" });
     }
 
@@ -102,6 +105,15 @@ exports.guardarUsuario = async (req, res) => {
       );
 
       await t.commit();
+      
+      (async () => {
+      try {
+        await notificarRegistroUsuario(nuevoUsuario, nuevoCliente);
+      } catch (e) {
+        console.error("No se pudo enviar correo de registro:", e?.message || e);
+      }
+    })();
+      
       return res
         .status(201)
         .json({ usuario: nuevoUsuario, cliente: nuevoCliente });
