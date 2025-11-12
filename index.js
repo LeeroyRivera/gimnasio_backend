@@ -5,6 +5,8 @@ const path = require("path");
 const db = require("./src/config/database");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
+const passport = require("passport");
+const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
@@ -26,19 +28,12 @@ require("./src/models/inventario/categoria_equipo");
 require("./src/models/inventario/equipo");
 require("./src/models/inventario/mantenimiento");
 
-// Importar modelos de asistente virtual
-require("./src/models/asistente_virtual/categoria_ejercicio");
-require("./src/models/asistente_virtual/ejercicio");
-require("./src/models/asistente_virtual/rutina");
-require("./src/models/asistente_virtual/rutina_ejercicio");
-require("./src/models/asistente_virtual/progreso_cliente");
-
 // Establecer relaciones
 require("./src/config/relaciones")();
 
 const app = express();
 
-db.sync({ alter: true })
+db.sync()
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
   })
@@ -49,6 +44,7 @@ db.sync({ alter: true })
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(passport.initialize());
 
 app.set("port", process.env.PORT || 3000);
 
@@ -68,24 +64,67 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Gym API" });
 });
 
-app.use("/api/usuario", require("./src/routes/usuarios/rutasUsuario"));
-app.use("/api/rol", require("./src/routes/usuarios/rutasRol"));
-app.use("/api/sesion", require("./src/routes/usuarios/rutasSesion"));
-app.use("/api/cliente", require("./src/routes/usuarios/rutasCliente"));
+app.use(
+  "/api/usuario",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/usuarios/rutasUsuario")
+);
+app.use(
+  "/api/rol",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/usuarios/rutasRol")
+);
+app.use(
+  "/api/sesion",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/usuarios/rutasSesion")
+);
+app.use(
+  "/api/cliente",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/usuarios/rutasCliente")
+);
 app.use("/api/autenticacion", require("./src/routes/authRutas"));
-app.use("/api/pagos/planes", require("./src/routes/pagos/rutaPlanMembresia"));
-app.use("/api/pagos/membresias", require("./src/routes/pagos/rutaMembresia"));
-app.use("/api/pagos/pagos", require("./src/routes/pagos/rutaPago"));
+app.use(
+  "/api/pagos/planes",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/pagos/rutaPlanMembresia")
+);
+app.use(
+  "/api/pagos/membresias",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/pagos/rutaMembresia")
+);
+app.use(
+  "/api/pagos/pagos",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/pagos/rutaPago")
+);
 app.use(
   "/api/inventario/categoria",
+  passport.authenticate("jwt", { session: false }),
   require("./src/routes/inventario/rutaCategoria")
 );
 app.use(
   "/api/inventario/equipo",
+  passport.authenticate("jwt", { session: false }),
   require("./src/routes/inventario/rutaEquipo")
 );
 app.use(
   "/api/inventario/mantenimiento",
+  passport.authenticate("jwt", { session: false }),
   require("./src/routes/inventario/rutaMantenimiento")
+);
+app.use(
+  "/api/control-acceso/codigo-qr",
+  passport.authenticate("jwt", { session: false }),
+  autenticacionRol("admin"),
+  require("./src/routes/control_acceso/rutaCodigoQR")
+);
+app.use(
+  "/api/control-acceso/asistencia",
+  passport.authenticate("jwt", { session: false }),
+  autenticacionRol("admin"),
+  require("./src/routes/control_acceso/rutaAsistencia")
 );
 module.exports = app;

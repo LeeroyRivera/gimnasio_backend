@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const passport = require("../config/passport");
 const argon = require("argon2");
-const { body } = require("express-validator");
+const { body, oneOf } = require("express-validator");
 const { Op } = require("sequelize");
 const Rol = require("../models/usuarios/rol");
 const Usuario = require("../models/usuarios/usuario");
@@ -11,9 +11,13 @@ const { validationResult } = require("express-validator");
 
 const router = express.Router();
 const validacionesLogin = [
-  body("username")
-    .notEmpty()
-    .withMessage("El nombre de usuario es obligatorio"),
+  oneOf(
+    [
+      [body("username").exists().bail().notEmpty()],
+      [body("email").exists().bail().isEmail()],
+    ],
+    "Debe enviar 'username' o un 'email' válido"
+  ),
   body("password").notEmpty().withMessage("La contraseña es obligatoria"),
 ];
 
@@ -84,10 +88,12 @@ router.post("/login", validacionesLogin, async (req, res) => {
       return res.status(401).json({ mensaje: "Usuario no encontrado" });
     }
 
-    const contrasenaValida = await argon.verify(
-      usuario.password_hash,
-      password
-    );
+    if (!usuario.password) {
+      return res
+        .status(500)
+        .json({ mensaje: "Usuario sin hash de contraseña almacenado" });
+    }
+    const contrasenaValida = await argon.verify(usuario.password, password);
     if (!contrasenaValida) {
       return res.status(401).json({ mensaje: "Contraseña incorrecta" });
     }

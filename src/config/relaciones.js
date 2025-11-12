@@ -14,12 +14,6 @@ const CategoriaEquipo = require("../models/inventario/categoria_equipo");
 const Equipo = require("../models/inventario/equipo");
 const Mantenimiento = require("../models/inventario/mantenimiento");
 
-const CategoriaEjercicio = require("../models/asistente_virtual/categoria_ejercicio");
-const Ejercicio = require("../models/asistente_virtual/ejercicio");
-const Rutina = require("../models/asistente_virtual/rutina");
-const RutinaEjercicio = require("../models/asistente_virtual/rutina_ejercicio");
-const ProgresoCliente = require("../models/asistente_virtual/progreso_cliente");
-
 module.exports = function establecerRelaciones() {
   // Usuario / Rol (1:N)
   Rol.hasMany(Usuario, { foreignKey: "id_rol" });
@@ -31,19 +25,18 @@ module.exports = function establecerRelaciones() {
 
   // Sesiones (1:N Usuario)
   Usuario.hasMany(Sesion, { foreignKey: "id_usuario" });
-  Sesion.belongsTo(Usuario, { foreignKey: "id_usuario"});
+  Sesion.belongsTo(Usuario, { foreignKey: "id_usuario" });
 
   // Membresías y planes
   PlanMembresia.hasMany(Membresia, { foreignKey: "id_plan" });
-  Membresia.belongsTo(PlanMembresia, { foreignKey: "id_plan", as: 'plan'});
+  Membresia.belongsTo(PlanMembresia, { foreignKey: "id_plan", as: "plan" });
 
   Cliente.hasMany(Membresia, { foreignKey: "id_cliente", onDelete: "CASCADE" });
   Membresia.belongsTo(Cliente, { foreignKey: "id_cliente", as: "cliente" });
 
-
   // Pagos
   Membresia.hasMany(Pago, { foreignKey: "id_membresia" });
-  Pago.belongsTo(Membresia, { foreignKey: "id_membresia", as: 'membresia' });
+  Pago.belongsTo(Membresia, { foreignKey: "id_membresia", as: "membresia" });
 
   Usuario.hasMany(Pago, { foreignKey: "procesado_por" });
   Pago.belongsTo(Usuario, { foreignKey: "procesado_por", as: "procesadoPor" });
@@ -64,30 +57,4 @@ module.exports = function establecerRelaciones() {
     onDelete: "CASCADE",
   });
   Mantenimiento.belongsTo(Equipo, { foreignKey: "id_equipo" });
-
-  // Asistente virtual
-  CategoriaEjercicio.hasMany(Ejercicio, {
-    foreignKey: "id_categoria_ejercicio",
-  });
-  Ejercicio.belongsTo(CategoriaEjercicio, {
-    foreignKey: "id_categoria_ejercicio",
-  });
-
-  Cliente.hasMany(Rutina, { foreignKey: "id_cliente", onDelete: "CASCADE" });
-  Rutina.belongsTo(Cliente, { foreignKey: "id_cliente" });
-
-  Rutina.hasMany(RutinaEjercicio, {
-    foreignKey: "id_rutina",
-    onDelete: "CASCADE",
-  });
-  RutinaEjercicio.belongsTo(Rutina, { foreignKey: "id_rutina" });
-
-  Ejercicio.hasMany(RutinaEjercicio, { foreignKey: "id_ejercicio" });
-  RutinaEjercicio.belongsTo(Ejercicio, { foreignKey: "id_ejercicio" });
-
-  Cliente.hasMany(ProgresoCliente, {
-    foreignKey: "id_cliente",
-    onDelete: "CASCADE",
-  });
-  ProgresoCliente.belongsTo(Cliente, { foreignKey: "id_cliente" });
 };
