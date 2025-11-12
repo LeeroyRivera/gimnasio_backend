@@ -27,22 +27,23 @@ module.exports = function establecerRelaciones() {
 
   // Cliente / Personal (1:1 con Usuario)
   Usuario.hasOne(Cliente, { foreignKey: "id_usuario", onDelete: "CASCADE" });
-  Cliente.belongsTo(Usuario, { foreignKey: "id_usuario" });
+  Cliente.belongsTo(Usuario, { foreignKey: "id_usuario", as: "usuario" });
 
   // Sesiones (1:N Usuario)
   Usuario.hasMany(Sesion, { foreignKey: "id_usuario" });
-  Sesion.belongsTo(Usuario, { foreignKey: "id_usuario" });
+  Sesion.belongsTo(Usuario, { foreignKey: "id_usuario"});
 
   // Membresías y planes
   PlanMembresia.hasMany(Membresia, { foreignKey: "id_plan" });
-  Membresia.belongsTo(PlanMembresia, { foreignKey: "id_plan" });
+  Membresia.belongsTo(PlanMembresia, { foreignKey: "id_plan", as: 'plan'});
 
   Cliente.hasMany(Membresia, { foreignKey: "id_cliente", onDelete: "CASCADE" });
-  Membresia.belongsTo(Cliente, { foreignKey: "id_cliente" });
+  Membresia.belongsTo(Cliente, { foreignKey: "id_cliente", as: "cliente" });
+
 
   // Pagos
   Membresia.hasMany(Pago, { foreignKey: "id_membresia" });
-  Pago.belongsTo(Membresia, { foreignKey: "id_membresia" });
+  Pago.belongsTo(Membresia, { foreignKey: "id_membresia", as: 'membresia' });
 
   Usuario.hasMany(Pago, { foreignKey: "procesado_por" });
   Pago.belongsTo(Usuario, { foreignKey: "procesado_por", as: "procesadoPor" });

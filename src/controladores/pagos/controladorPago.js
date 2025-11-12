@@ -6,15 +6,47 @@ const Membresia = require('../../models/pagos/membresia');
 const Pago = require('../../models/pagos/pago');
 const { validationResult } = require('express-validator');
 const PlanMembresia = require('../../models/pagos/plan_membresia');
+const Cliente = require("../../models/usuarios/cliente");
+const Usuario = require("../../models/usuarios/usuario");
 
 exports.listar = async (req, res) => {
   try {
-    const pagos = await Pago.findAll();
+    const pagos = await Pago.findAll({
+      include: [
+        {
+          model: Membresia,
+          as: "membresia",
+          attributes: ["id", "monto_pagado", "fecha_inicio", "fecha_vencimiento", "estado"],
+          include: [
+             {
+              model: Cliente,
+              as: "cliente",
+              attributes: ["id_cliente", "nombre", "apellido"] // ahora viene desde CLIENTE
+            },
+            {
+              model: PlanMembresia,
+              as: "plan",
+              attributes: ["id", "nombre_plan", "descripcion", "duracion_dias"]
+            }
+          ]
+        },
+        {
+          model: Usuario,
+          as: "procesadoPor", // <-- Usuario que procesó el pago
+          attributes: ["username"] 
+        }
+      ]
+    });
+
     res.status(200).json(pagos);
   } catch (error) {
-    res.status(500).json({ message: 'Error al listar los pagos', error: error.message });
+    res.status(500).json({
+      message: "Error al listar los pagos",
+      error: error.message
+    });
   }
 };
+
 
 
 // Genera un número de referencia
@@ -71,7 +103,7 @@ exports.guardar = async (req, res) => {
       metodo_pago,
       comprobante,
       referencia,
-     // procesado_por,
+      procesado_por: req.user?.id_usuario || null,
       notas,
       detalle_descuento: descuento || 0
     });
@@ -113,7 +145,7 @@ exports.editar = async (req, res) => {
       metodo_pago,
       comprobante,
       referencia,
-      //procesado_por,
+      procesado_por: req.user?.id_usuario || null, 
       notas
     }, {
       where: { id: id }

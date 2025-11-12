@@ -18,6 +18,14 @@ const Cliente = sequelize.define(
         key: "id_usuario",
       },
     },
+    nombre: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    apellido: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
     tipo_sangre: {
       type: DataTypes.STRING(5),
       allowNull: true,

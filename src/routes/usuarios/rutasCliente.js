@@ -29,6 +29,8 @@ const { query, body } = require("express-validator");
  *           schema:
  *             type: object
  *             properties:
+ *               nombre: { type: string }
+ *               apellido: { type: string }
  *               tipo_sangre: { type: string }
  *               peso_actual: { type: number, format: float }
  *               altura: { type: number, format: float }
@@ -46,6 +48,8 @@ const { query, body } = require("express-validator");
 router.put(
   "/actualizar",
   query("id").isInt().withMessage("El ID debe ser un número entero"),
+  body("nombre").optional().isString().withMessage("El nombre debe ser una cadena de texto"),
+  body("apellido").optional().isString().withMessage("El apellido debe ser una cadena de texto"),
   body("tipo_sangre")
     .optional()
     .isString()

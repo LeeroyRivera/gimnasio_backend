@@ -2,10 +2,11 @@ const Usuario = require("../../models/usuarios/usuario");
 const { validationResult } = require("express-validator");
 const Cliente = require("../../models/usuarios/cliente");
 const argon2 = require("argon2");
+const sequelize = require("../../config/database");
 
 exports.listarTodosUsuarios = async (req, res) => {
   try {
-    const usuarios = await Usuario.findAll();
+    const usuarios = await Usuario.findAll({ include: Cliente });
     res.status(200).json(usuarios);
   } catch (error) {
     res.status(500).json({ error: "Error al listar usuarios" + error });
@@ -15,11 +16,13 @@ exports.listarTodosUsuarios = async (req, res) => {
 exports.obtenerUsuarioPorUsername = async (req, res) => {
   const { username } = req.params;
   try {
-    const usuario = await Usuario.findOne({ where: { username } });
+    const usuario = await Usuario.findOne({
+      where: { username },
+      include: Cliente,
+    });
     if (!usuario) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
-
     res.status(200).json(usuario);
   } catch (error) {
     res.status(500).json({
@@ -30,7 +33,10 @@ exports.obtenerUsuarioPorUsername = async (req, res) => {
 
 exports.obtenerUsuariosActivos = async (req, res) => {
   try {
-    const usuarios = await Usuario.findAll({ where: { estado: "activo" } });
+    const usuarios = await Usuario.findAll({
+      where: { estado: "activo" },
+      include: Cliente,
+    });
     res.status(200).json(usuarios);
   } catch (error) {
     res
@@ -48,8 +54,6 @@ exports.guardarUsuario = async (req, res) => {
   try {
     const {
       id_rol,
-      nombre,
-      apellido,
       email,
       telefono,
       fecha_nacimiento,
@@ -60,42 +64,61 @@ exports.guardarUsuario = async (req, res) => {
       cliente,
     } = req.body;
 
-    // Validar existencia de cliente
-    /*if (!cliente || typeof cliente !== "object") {
+    const [existeEmail, existeUsername] = await Promise.all([
+      //
+      Usuario.findOne({ where: { email } }),
+      Usuario.findOne({ where: { username } }),
+    ]);
+    if (existeEmail) {
+      return res.status(409).json({ error: "El email ya está registrado" });
+    }
+    if (existeUsername) {
       return res
-        .status(400)
-        .json({ error: "Objeto 'cliente' faltante o inválido" });
-    }*/
+        .status(409)
+        .json({ error: "El nombre de usuario ya está en uso" });
+    }
 
-    // Hashear password enviada
-    const password_hash = await argon2.hash(password);
+    // Transacción para crear usuario y cliente de forma atómica
+    const t = await sequelize.transaction(); // Iniciar transacción, una transaccion es una serie de operaciones que se ejecutan como una sola unidad
 
-    const nuevoUsuario = await Usuario.create({
-      id_rol,
-      nombre,
-      apellido,
-      email,
-      telefono,
-      fecha_nacimiento,
-      genero,
-      foto_perfil,
-      username,
-      password_hash,
-    });
+    try {
+      const nuevoUsuario = await Usuario.create(
+        {
+          id_rol,
+          email,
+          telefono,
+          fecha_nacimiento,
+          genero,
+          foto_perfil,
+          username,
+          password,
+        },
+        { transaction: t } // Pasar la transacción al crear el usuario
+      );
 
-    const nuevoCliente = await Cliente.create({
-      ...cliente,
-      id_usuario: nuevoUsuario.id_usuario,
-    });
+      const nuevoCliente = await Cliente.create(
+        { ...cliente, id_usuario: nuevoUsuario.id_usuario },
+        { transaction: t } // Pasar la transacción al crear el cliente
+      );
 
-    // Ocultar hash en respuesta
-    /*const { password_hash: _, ...usuarioSeguro } = nuevoUsuario.toJSON
-      ? nuevoUsuario.toJSON()
-      : nuevoUsuario;*/
-
-    res.status(201).json({ usuario: nuevoUsuario, cliente: nuevoCliente });
+      await t.commit();
+      return res
+        .status(201)
+        .json({ usuario: nuevoUsuario, cliente: nuevoCliente });
+    } catch (errorTransaccion) {
+      await t.rollback();
+      throw errorTransaccion;
+    }
   } catch (error) {
-    res.status(500).json({ error: "Error al guardar usuario" + error });
+    if (error && error.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({
+        error: "Violación de unicidad, Duplicacion de dato unico",
+        detalles: error.errors,
+      });
+    }
+    res.status(500).json({
+      error: "Error al guardar usuario: " + error,
+    });
   }
 };
 
@@ -105,6 +128,8 @@ exports.actualizarUsuario = async (req, res) => {
   if (!errores.isEmpty()) {
     return res.status(400).json({ errores: errores.array() });
   }
+  // Extraer campos del body para validaciones de unicidad condicionales
+  const { email, username } = req.body;
 
   try {
     const usuario = await Usuario.findByPk(id);
@@ -112,15 +137,24 @@ exports.actualizarUsuario = async (req, res) => {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
 
-    // Si llega password, re-hashear y mover a password_hash
-    if (req.body.password) {
-      req.body.password_hash = await argon2.hash(req.body.password);
-      delete req.body.password;
+    if (email && email !== usuario.email) {
+      // Si el email  no es nulo y es diferente al actual
+      const existeEmail = await Usuario.findOne({ where: { email } });
+      if (existeEmail) {
+        return res.status(409).json({ error: "El email ya está registrado" });
+      }
     }
+    if (username && username !== usuario.username) {
+      const existeUsername = await Usuario.findOne({ where: { username } }); // Si el username no es nulo y es diferente al actual
+      if (existeUsername) {
+        return res
+          .status(409)
+          .json({ error: "El nombre de usuario ya está en uso" });
+      }
+    }
+    const updates = { ...req.body };
 
-    await usuario.update({
-      ...req.body,
-    });
+    const actualizado = await usuario.update(updates);
 
     res.status(200).json("Usuario actualizado correctamente");
   } catch (error) {
