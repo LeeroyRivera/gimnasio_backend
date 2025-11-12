@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
 const Membresia = require('./membresia');
-//const Usuario = require('./usuario');
+const Usuario = require('../usuarios/usuario');
 const moment = require('moment');
 
 const Pago = sequelize.define('Pago', {
@@ -34,14 +34,14 @@ const Pago = sequelize.define('Pago', {
     type: DataTypes.STRING(100),
     allowNull: true
   },
-  /*procesado_por: {
+  procesado_por: {
     type: DataTypes.INTEGER,
     allowNull: true,
     references: {
       model: Usuario,
       key: 'id_usuario'
     }
-  },*/
+  },
   notas: {
     type: DataTypes.TEXT,
     allowNull: true

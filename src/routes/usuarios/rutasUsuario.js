@@ -54,14 +54,10 @@ router.get("/activo", controladorUsuario.obtenerUsuariosActivos);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [id_rol, nombre, apellido, email, username, password, cliente]
+ *             required: [id_rol, email, username, password, cliente]
  *             properties:
  *               id_rol:
  *                 type: integer
- *               nombre:
- *                 type: string
- *               apellido:
- *                 type: string
  *               email:
  *                 type: string
  *                 format: email
@@ -82,6 +78,8 @@ router.get("/activo", controladorUsuario.obtenerUsuariosActivos);
  *                 type: object
  *                 description: Datos adicionales del perfil cliente
  *                 properties:
+ *                   nombre: { type: string }
+ *                   apellido: { type: string }
  *                   tipo_sangre: { type: string }
  *                   peso_actual: { type: number, format: float }
  *                   altura: { type: number, format: float }
@@ -100,8 +98,6 @@ router.post(
     body("id_rol")
       .isInt()
       .withMessage("El ID del rol debe ser un número entero"),
-    body("nombre").notEmpty().withMessage("El nombre es obligatorio"),
-    body("apellido").notEmpty().withMessage("El apellido es obligatorio"),
     body("email").isEmail().withMessage("El email no es válido"),
     body("username")
       .notEmpty()
@@ -128,6 +124,12 @@ router.post(
       .bail() // Detenerse si no existe
       .isObject()
       .withMessage("El cliente debe de ser un objeto"),
+    body("cliente.nombre")
+      .notEmpty()
+      .withMessage("El nombre del cliente es obligatorio"),
+    body("cliente.apellido")
+      .notEmpty()
+      .withMessage("El apellido del cliente es obligatorio"),
     body("cliente.tipo_sangre")
       .optional()
       .isString()
@@ -178,8 +180,6 @@ router.post(
  *             type: object
  *             properties:
  *               id_rol: { type: integer }
- *               nombre: { type: string }
- *               apellido: { type: string }
  *               email: { type: string, format: email }
  *               username: { type: string }
  *               password: { type: string, format: password }
@@ -204,14 +204,6 @@ router.put(
       .optional()
       .isInt()
       .withMessage("El ID del rol debe ser un número entero"),
-    body("nombre")
-      .optional()
-      .notEmpty()
-      .withMessage("El nombre no puede estar vacío"),
-    body("apellido")
-      .optional()
-      .notEmpty()
-      .withMessage("El apellido no puede estar vacío"),
     body("email").optional().isEmail().withMessage("El email no es válido"),
     body("username")
       .optional()

@@ -18,14 +18,6 @@ const Usuario = sequelize.define(
         key: "id_rol",
       },
     },
-    nombre: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    apellido: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
     email: {
       type: DataTypes.STRING(150),
       allowNull: false,
@@ -53,7 +45,7 @@ const Usuario = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    password_hash: {
+    password: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
@@ -75,8 +67,14 @@ const Usuario = sequelize.define(
 );
 
 Usuario.beforeCreate(async (usuario) => {
-  if (usuario.password_hash) {
-    usuario.password_hash = await argon2.hash(usuario.password_hash);
+  if (usuario.password) {
+    usuario.password = await argon2.hash(usuario.password);
+  }
+});
+
+Usuario.beforeUpdate(async (usuario) => {
+  if (usuario.changed("password")) {
+    usuario.password = await argon2.hash(usuario.password);
   }
 });
 
