@@ -8,4 +8,4 @@ function autenticacionRol(rolPermitido) {
     next();
   };
 }
-module.exports = autenticacionRol;
+module.exports = { autenticacionRol };

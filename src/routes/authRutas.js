@@ -29,7 +29,7 @@ const validacionesLogin = [
  */
 /**
  * @swagger
- * /autenticacion/login:
+ * /api/autenticacion/login:
  *   post:
  *     summary: Iniciar sesión y obtener un token JWT
  *     tags: [Autenticacion]
@@ -39,17 +39,20 @@ const validacionesLogin = [
  *         application/json:
  *           schema:
  *             type: object
- *             required: [username, password]
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
- *                 description: Alternativa a username (si está habilitado)
+ *                 description: Email del usuario (alternativa a username)
  *               username:
  *                 type: string
+ *                 description: Nombre de usuario (alternativa a email)
  *               password:
  *                 type: string
  *                 format: password
+ *                 description: Contraseña del usuario
+ *             required:
+ *               - password
  *     responses:
  *       200:
  *         description: Autenticación correcta
@@ -60,6 +63,7 @@ const validacionesLogin = [
  *               properties:
  *                 token:
  *                   type: string
+ *                   description: Token JWT para autenticación
  *       400:
  *         description: Error de validación en la petición
  *       401:
@@ -125,7 +129,7 @@ router.post("/login", validacionesLogin, async (req, res) => {
 
 /**
  * @swagger
- * /autenticacion/perfil:
+ * /api/autenticacion/perfil:
  *   get:
  *     summary: Obtener el perfil del usuario autenticado
  *     tags: [Autenticacion]
@@ -134,6 +138,22 @@ router.post("/login", validacionesLogin, async (req, res) => {
  *     responses:
  *       200:
  *         description: Perfil del usuario autenticado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 usuario:
+ *                   type: object
+ *                   properties:
+ *                     id_usuario:
+ *                       type: integer
+ *                     username:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     id_rol:
+ *                       type: integer
  *       401:
  *         description: No autorizado o token inválido
  */

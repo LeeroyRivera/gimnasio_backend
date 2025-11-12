@@ -64,11 +64,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Gym API" });
 });
 
-app.use(
-  "/api/usuario",
-  passport.authenticate("jwt", { session: false }),
-  require("./src/routes/usuarios/rutasUsuario")
-);
+app.use("/api/usuario", require("./src/routes/usuarios/rutasUsuario"));
 app.use(
   "/api/rol",
   passport.authenticate("jwt", { session: false }),
