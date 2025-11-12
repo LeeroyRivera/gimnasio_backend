@@ -6,6 +6,7 @@ const db = require("./src/config/database");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
 const passport = require("passport");
+const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
@@ -117,11 +118,13 @@ app.use(
 app.use(
   "/api/control-acceso/codigo-qr",
   passport.authenticate("jwt", { session: false }),
+  autenticacionRol("admin"),
   require("./src/routes/control_acceso/rutaCodigoQR")
 );
 app.use(
   "/api/control-acceso/asistencia",
   passport.authenticate("jwt", { session: false }),
+  autenticacionRol("admin"),
   require("./src/routes/control_acceso/rutaAsistencia")
 );
 module.exports = app;

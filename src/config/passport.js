@@ -16,10 +16,10 @@ passport.use(
       const usuario = await Usuario.findByPk(payload.id); // Buscar el usuario en la base de datos utilizando el ID del payload del token.
       const user = {
         id: payload.id,
-        role: payload.rol,
+        rol: payload.rol,
       };
       if (usuario) {
-        done(null, usuario); // Si el usuario existe, pasar el objeto usuario al siguiente middleware.
+        done(null, user); // Si el usuario existe, pasar el objeto usuario al siguiente middleware.
       } else {
         done(null, false); // Si el usuario no existe, indicar que la autenticación falló.
       }
