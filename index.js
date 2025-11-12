@@ -33,7 +33,7 @@ require("./src/config/relaciones")();
 
 const app = express();
 
-db.sync()
+db.sync({alter: true})
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
   })
@@ -66,7 +66,6 @@ app.get("/", (req, res) => {
 
 app.use(
   "/api/usuario",
-  passport.authenticate("jwt", { session: false }),
   require("./src/routes/usuarios/rutasUsuario")
 );
 app.use(

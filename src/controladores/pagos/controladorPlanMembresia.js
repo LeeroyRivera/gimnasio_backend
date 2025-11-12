@@ -65,7 +65,7 @@ exports.editar = async (req, res) => {
       acceso_asistente_virtual,
       estado
     }, {
-      where: { id_plan: id }
+      where: { id: id }
     }).then(data => {
       res.json({ msj: 'Registro actualizado', data });
     }).catch(er => {
@@ -87,7 +87,7 @@ exports.eliminar = async (req, res) => {
     const { id } = req.query;
 
     await PlanMembresia.destroy({
-      where: { id_plan: id }
+      where: { id: id }
     }).then(data => {
       res.json({ msj: 'Registro eliminado', data });
     }).catch(er => {
