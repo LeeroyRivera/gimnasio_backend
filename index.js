@@ -5,7 +5,7 @@ const path = require("path");
 const db = require("./src/config/database");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
-const passport = require("passport");
+const passport = require("./src/config/passport");
 const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
@@ -64,10 +64,7 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Gym API" });
 });
 
-app.use(
-  "/api/usuario",
-  require("./src/routes/usuarios/rutasUsuario")
-);
+app.use("/api/usuario", require("./src/routes/usuarios/rutasUsuario"));
 app.use(
   "/api/rol",
   passport.authenticate("jwt", { session: false }),

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controladorUsuario = require("../../controllers/usuarios/controladorUsuario");
 const { body, query, validationResult } = require("express-validator");
+const passport = require("passport");
 
 // Middleware genérico para manejar validaciones
 function manejarValidaciones(req, res, next) {
@@ -28,7 +29,11 @@ function manejarValidaciones(req, res, next) {
  *       200:
  *         description: Lista de usuarios obtenida correctamente
  */
-router.get("/listar", controladorUsuario.listarTodosUsuarios);
+router.get(
+  "/listar",
+  passport.authenticate("jwt", { session: false }),
+  controladorUsuario.listarTodosUsuarios
+);
 
 /**
  * @swagger
@@ -40,7 +45,11 @@ router.get("/listar", controladorUsuario.listarTodosUsuarios);
  *       200:
  *         description: Lista de usuarios activos
  */
-router.get("/activo", controladorUsuario.obtenerUsuariosActivos);
+router.get(
+  "/activo",
+  passport.authenticate("jwt", { session: false }),
+  controladorUsuario.obtenerUsuariosActivos
+);
 
 /**
  * @swagger
@@ -198,6 +207,7 @@ router.post(
  */
 router.put(
   "/actualizar",
+  passport.authenticate("jwt", { session: false }),
   [
     query("id").isInt().withMessage("El ID (query) debe ser un número entero"),
     body("id_rol")
@@ -261,6 +271,7 @@ router.put(
  */
 router.delete(
   "/eliminar",
+  passport.authenticate("jwt", { session: false }),
   [query("id").isInt().withMessage("El ID debe ser un número entero")],
   manejarValidaciones,
   controladorUsuario.eliminarUsuario
