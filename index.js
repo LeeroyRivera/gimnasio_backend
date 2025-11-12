@@ -5,7 +5,7 @@ const path = require("path");
 const db = require("./src/config/database");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
-const passport = require("passport");
+const passport = require("./src/config/passport");
 const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
