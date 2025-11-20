@@ -7,6 +7,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
 const passport = require("./src/config/passport");
 const { autenticacionRol } = require("./src/middleware/autenticacionRol");
+const { generarAutomatico } = require("./src/controllers/control_acceso/controladorCodigoQR");
 
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
@@ -36,6 +37,8 @@ const app = express();
 db.sync({alter: true})
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
+    // Generar código QR automático al iniciar
+    generarAutomatico();
   })
   .catch((error) => {
     console.error("Error al conectar a la base de datos:", error);

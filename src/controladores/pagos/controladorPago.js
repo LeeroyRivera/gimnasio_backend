@@ -66,10 +66,7 @@ exports.guardar = async (req, res) => {
   try {
     const {
       id_membresia,
-     // monto,
       metodo_pago,
-      //comprobante,
-      //procesado_por,
       notas
     } = req.body;
 
@@ -170,7 +167,7 @@ exports.eliminar = async (req, res) => {
     const { id } = req.query;
 
     await Pago.destroy({
-      where: { id_pago: id }
+      where: { id: id }
     }).then(data => {
       res.json({ msj: 'Registro eliminado', data });
     }).catch(er => {
@@ -179,7 +176,7 @@ exports.eliminar = async (req, res) => {
   }
 };
 
-
+//valida si no hay errores y si no los hay pasa a guardar comprobante
 exports.validarImagenPago = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
