@@ -1,13 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
 const db = require("./src/config/database");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
 const passport = require("./src/config/passport");
-const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 const { generarAutomatico } = require("./src/controllers/control_acceso/controladorCodigoQR");
+const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
 require("./src/models/usuarios/rol");
@@ -34,15 +35,20 @@ require("./src/config/relaciones")();
 
 const app = express();
 
-db.sync({alter: true})
+db.sync()
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
-    // Generar código QR automático al iniciar
     generarAutomatico();
   })
   .catch((error) => {
     console.error("Error al conectar a la base de datos:", error);
   });
+
+// Configurar CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // URL del frontend
+  credentials: true
+}));
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -57,6 +63,8 @@ app.get("/swagger.json", (req, res) => {
   res.send(swaggerSpec);
 });
 
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/imagenes", express.static(path.join(__dirname, "public/img")));
 
 app.listen(app.get("port"), () => {

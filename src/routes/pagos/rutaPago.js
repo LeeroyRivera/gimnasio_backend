@@ -149,8 +149,11 @@ routes.get('/listar', controladorPago.listar);
  *         description: Error en los datos enviados
  */
 routes.post('/guardar',
-  body("id_membresia").notEmpty().isInt().withMessage("Debe enviar el id de la membresía"),
-  body("metodo_pago").isIn(['Efectivo','Transferencia','Tarjeta']).withMessage("Método de pago inválido"),
+  controladorPago.validarComprobanteGuardar,
+  [
+    body("id_membresia").notEmpty().isInt().withMessage("Debe enviar el id de la membresía"),
+    body("metodo_pago").isIn(['Efectivo','Transferencia','Tarjeta']).withMessage("Método de pago inválido")
+  ],
   controladorPago.guardar
 );
 
@@ -216,7 +219,7 @@ routes.delete('/eliminar',
  * @swagger
  * /pagos/pagos/comprobante:
  *   post:
- *     summary: Sube un comprobante de pago en formato imagen
+ *     summary: Actualiza el comprobante de un pago existente
  *     tags: [Pagos]
  *     parameters:
  *       - in: query
@@ -224,7 +227,7 @@ routes.delete('/eliminar',
  *         required: true
  *         schema:
  *           type: integer
- *         description: ID del pago o membresía relacionada
+ *         description: ID del pago
  *     requestBody:
  *       required: true
  *       content:
@@ -238,9 +241,12 @@ routes.delete('/eliminar',
  *                 description: Archivo de imagen del comprobante
  *     responses:
  *       200:
- *         description: Imagen guardada correctamente
+ *         description: Comprobante actualizado correctamente
  */
-
-routes.post('/comprobante', controladorPago.validarImagenPago, controladorPago.GuardarComprobante);
+routes.post('/comprobante',
+  query("id").isInt().withMessage("Debe enviar ID del pago"),
+  controladorPago.validarComprobanteActualizar,
+  controladorPago.actualizarComprobantePago
+);
 
 module.exports = routes;

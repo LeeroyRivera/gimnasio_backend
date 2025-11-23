@@ -10,7 +10,7 @@ exports.listar = async (req, res) => {
   try {
     const equipos = await Equipo.findAll({
       include: [
-        { model: CategoriaEquipo }
+        { model: CategoriaEquipo, as: 'categoria_equipo' }
       ]
     });
     res.status(200).json(equipos);
@@ -110,28 +110,39 @@ exports.eliminar = async (req, res) => {
   }
 };
 
-exports.validarImagenEquipo = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-      return res.status(400).json(errors.array());
-  }
-  else {
-      uploadImagenEquipos(req, res, (err) => {
-          if (err instanceof multer.MulterError) {
-              res.status(400).json({ msj: "Hay errores al cargar la imagen", error: err });
-          }
-          else if (err) {
-              res.status(400).json({ msj: "Hay errores al cargar la imagen", error: err });
-          }
-          else {
-              next();
-          }
-      });
-  }
+// Middleware para validar y procesar imágenes al GUARDAR (crear nuevo equipo)
+exports.validarImagenGuardar = (req, res, next) => {
+  uploadImagenEquipos(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ msj: "Error al cargar la imagen", error: err.message });
+    }
+    else if (err) {
+      return res.status(400).json({ msj: "Error al cargar la imagen", error: err.message });
+    }
+    else {
+      // La imagen es opcional al guardar, continuar incluso sin imagen
+      next();
+    }
+  });
 };
 
+// Middleware para validar y procesar imágenes al ACTUALIZAR
+exports.validarImagenActualizar = (req, res, next) => {
+  uploadImagenEquipos(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res.status(400).json({ msj: "Error al cargar la imagen", error: err.message });
+    }
+    else if (err) {
+      return res.status(400).json({ msj: "Error al cargar la imagen", error: err.message });
+    }
+    else {
+      next();
+    }
+  });
+};
 
-exports.GuardarImagenEquipo = async (req, res) => {
+// Actualizar solo la imagen de un equipo existente
+exports.actualizarImagenEquipo = async (req, res) => {
   try {
     const { id } = req.query;
 
@@ -153,16 +164,24 @@ exports.GuardarImagenEquipo = async (req, res) => {
       return res.status(404).json({ msj: "Equipo no encontrado" });
     }
 
+    // Si ya tenía una imagen, eliminarla
+    if (equipo.foto) {
+      const rutaImagenAntigua = path.join(process.cwd(), 'public', equipo.foto);
+      if (fs.existsSync(rutaImagenAntigua)) {
+        fs.unlinkSync(rutaImagenAntigua);
+      }
+    }
+
     equipo.foto = foto;
     await equipo.save();
 
     res.status(200).json({
-      msj: "Imagen asociada correctamente al equipo",
+      msj: "Imagen actualizada correctamente",
       nombreArchivo: foto
     });
 
   } catch (error) {
-    res.status(500).json({ msj: "Error al guardar la imagen del equipo", error: error.message });
+    res.status(500).json({ msj: "Error al actualizar la imagen del equipo", error: error.message });
   }
 };
 

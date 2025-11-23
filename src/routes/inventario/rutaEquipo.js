@@ -63,22 +63,24 @@ routes.get('/listar', controladorEquipo.listar);
  *         description: Equipo registrado correctamente
  */
 routes.post('/guardar',
-  body("nombre_equipo").notEmpty().withMessage("El nombre del equipo es obligatorio"),
-  body("marca").notEmpty().withMessage("La marca es obligatoria"),
-  body("modelo").notEmpty().withMessage("El modelo es obligatorio"),
-  body("numero_serie").notEmpty().withMessage("Debe ingresar el número de serie"),
-  body("ubicacion").notEmpty().withMessage("La ubicación es obligatoria"),
-  body("costo").isDecimal().withMessage("El costo debe ser decimal"),
-  body("estado").optional().isIn(['Excelente','Bueno','Regular','En mantenimiento','Fuera de servicio'])
-    .withMessage("Estado inválido"),
-  body("id_categoria")
-    .notEmpty().withMessage("Debe enviar una categoría")
-    .isInt().withMessage("El id de la categoría debe ser entero")
-    .custom(async (value) => {
-      const categoria = await modeloCategoria.findOne({ where: { id: value } });
-      if (!categoria) throw new Error("La categoría no existe");
-    }),
-
+  controladorEquipo.validarImagenGuardar,
+  [
+    body("nombre_equipo").notEmpty().withMessage("El nombre del equipo es obligatorio"),
+    body("marca").notEmpty().withMessage("La marca es obligatoria"),
+    body("modelo").notEmpty().withMessage("El modelo es obligatorio"),
+    body("numero_serie").notEmpty().withMessage("Debe ingresar el número de serie"),
+    body("ubicacion").notEmpty().withMessage("La ubicación es obligatoria"),
+    body("costo").isDecimal().withMessage("El costo debe ser decimal"),
+    body("estado").optional().isIn(['Excelente','Bueno','Regular','En mantenimiento','Fuera de servicio'])
+      .withMessage("Estado inválido"),
+    body("id_categoria")
+      .notEmpty().withMessage("Debe enviar una categoría")
+      .isInt().withMessage("El id de la categoría debe ser entero")
+      .custom(async (value) => {
+        const categoria = await modeloCategoria.findOne({ where: { id: value } });
+        if (!categoria) throw new Error("La categoría no existe");
+      })
+  ],
   controladorEquipo.guardar
 );
 
@@ -159,7 +161,7 @@ routes.delete('/eliminar',
  * @swagger
  * /inventario/equipo/imagen:
  *   post:
- *     summary: Sube una imagen del equipo
+ *     summary: Actualiza la imagen de un equipo existente
  *     tags: [Equipos]
  *     parameters:
  *       - in: query
@@ -181,12 +183,12 @@ routes.delete('/eliminar',
  *                 description: Archivo de imagen
  *     responses:
  *       200:
- *         description: Imagen guardada correctamente
+ *         description: Imagen actualizada correctamente
  */
 routes.post('/imagen',
   query("id").isInt().withMessage("Debe enviar ID del equipo"),
-  controladorEquipo.validarImagenEquipo,
-  controladorEquipo.GuardarImagenEquipo
+  controladorEquipo.validarImagenActualizar,
+  controladorEquipo.actualizarImagenEquipo
 );
 
 module.exports = routes;

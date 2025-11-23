@@ -27,11 +27,6 @@ const PlanMembresia = sequelize.define('PlanMembresia', {
     allowNull: false,
     defaultValue: false
   },
-  acceso_asistente_virtual: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false
-  },
   estado: {
     type: DataTypes.ENUM('Activa', 'Inactiva'),
     allowNull: false,

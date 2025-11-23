@@ -7,7 +7,11 @@ exports.listar = async (req, res) => {
   try {
     const mantenimientos = await Mantenimiento.findAll({
       include: [
-        { model: Equipo }
+        { 
+          model: Equipo,
+          as: 'equipo',
+          attributes: ['id', 'nombre_equipo', 'marca', 'modelo', 'numero_serie', 'estado']
+        }
       ]
     });
     res.status(200).json(mantenimientos);

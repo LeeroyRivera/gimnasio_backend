@@ -95,81 +95,85 @@ exports.guardar = async (req, res) => {
 };
 
 exports.editar = async (req, res) => {
-  const errores = validationResult(req).array();
+  const errores = validationResult(req);
+  const erroresArray = errores.array();
 
-  if (errores.length > 0) {
-    const data = errores.map(s => ({
+  if (erroresArray.length > 0) {
+    const data = erroresArray.map(s => ({
     //  atributo: s.path,
       msj: s.msg
     }));
-    res.json({ msj: 'Hay errores', data });
+    return res.json({ msj: 'Hay errores', data });
   } else {
-    const { id } = req.query;
-    const {
-      id_cliente,
-      id_plan,
-      fecha_inicio,
-      fecha_vencimiento,
-      estado,
-      monto_pagado,
-      descuento_aplicado,
-      notas
-    } = req.body;
-    
-    
-    // Verificar si la membresía existe
-    const membresia = await Membresia.findOne({
-      where: { id: id } // <-- Usa el nombre real de tu columna
-    });
-
-    if (!membresia) {
-      return res.status(404).json({ message: 'Membresía no encontrada' });
-    }
-
-    // Verificar si el plan nuevo (si se cambia) existe
-    if (id_plan) {
-      const plan = await PlanMembresia.findByPk(id_plan);
-      if (!plan) {
-        return res.status(404).json({ message: 'El nuevo plan de membresía no existe' });
-      }
-    }
-   
-    await Membresia.update({
-      id_cliente,
-      id_plan,
-      fecha_inicio,
-      fecha_vencimiento,
-      estado,
-      monto_pagado,
-      descuento_aplicado,
-      notas
-    }, {
+    try {
+      const { id } = req.query;
+      const {
+        id_cliente,
+        id_plan,
+        fecha_inicio,
+        fecha_vencimiento,
+        estado,
+        monto_pagado,
+        descuento_aplicado,
+        notas
+      } = req.body;
       
-      where: { id: id }}
-    
-    );
-    // esta variable busca el registro en la base y lo muestra
-    const membresiaActualizada = await Membresia.findOne({
-      where: { id: id },
-      include: [
-        {
-          model: Cliente,
-          as: "cliente",
-          attributes: ["id_cliente", "nombre", "apellido"]
-        },
-        {
-          model: PlanMembresia,
-          as: 'plan',
-          attributes: ['id', 'nombre_plan', 'descripcion', 'duracion_dias']
+      
+      // Verificar si la membresía existe
+      const membresia = await Membresia.findOne({
+        where: { id: id } // <-- Usa el nombre real de tu columna
+      });
+
+      if (!membresia) {
+        return res.status(404).json({ message: 'Membresía no encontrada' });
+      }
+
+      // Verificar si el plan nuevo (si se cambia) existe
+      if (id_plan) {
+        const plan = await PlanMembresia.findByPk(id_plan);
+        if (!plan) {
+          return res.status(404).json({ message: 'El nuevo plan de membresía no existe' });
         }
-      ]
-    });
+      }
+    
+      await Membresia.update({
+        id_cliente,
+        id_plan,
+        fecha_inicio,
+        fecha_vencimiento,
+        estado,
+        monto_pagado,
+        descuento_aplicado,
+        notas
+      }, {
+        
+        where: { id: id }}
+      
+      );
+      // esta variable busca el registro en la base y lo muestra
+      const membresiaActualizada = await Membresia.findOne({
+        where: { id: id },
+        include: [
+          {
+            model: Cliente,
+            as: "cliente",
+            attributes: ["id_cliente", "nombre", "apellido"]
+          },
+          {
+            model: PlanMembresia,
+            as: 'plan',
+            attributes: ['id', 'nombre_plan', 'descripcion', 'duracion_dias']
+          }
+        ]
+      });
 
-    res.json({
-      msj: 'Registro actualizado correctamente',
-      data: membresiaActualizada
-    });
-
+      res.json({
+        msj: 'Registro actualizado correctamente',
+        data: membresiaActualizada
+      });
+    } catch (error) {
+      res.status(500).json({ msj: 'Error al actualizar', error: error.message });
+    }
   }
 };
 

@@ -50,11 +50,11 @@ module.exports = function establecerRelaciones() {
 
   // Inventario
   CategoriaEquipo.hasMany(Equipo, { foreignKey: "id_categoria" });
-  Equipo.belongsTo(CategoriaEquipo, { foreignKey: "id_categoria" });
+  Equipo.belongsTo(CategoriaEquipo, { foreignKey: "id_categoria", as: "categoria_equipo" });
 
   Equipo.hasMany(Mantenimiento, {
     foreignKey: "id_equipo",
     onDelete: "CASCADE",
   });
-  Mantenimiento.belongsTo(Equipo, { foreignKey: "id_equipo" });
+  Mantenimiento.belongsTo(Equipo, { foreignKey: "id_equipo", as: "equipo" });
 };

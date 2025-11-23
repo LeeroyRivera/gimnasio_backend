@@ -17,7 +17,7 @@ exports.guardar = async (req, res) => {
     return res.status(400).json({ errores: errores.array() });
   }
   try {
-    const { nombre_plan, descripcion, precio, duracion_dias, acceso_gimnasio, acceso_entrenador, acceso_asistente_virtual, estado } = req.body;
+    const { nombre_plan, descripcion, precio, duracion_dias, acceso_gimnasio, acceso_entrenador, estado } = req.body;
 
     const nuevoPlan = await PlanMembresia.create({
       nombre_plan,
@@ -25,7 +25,6 @@ exports.guardar = async (req, res) => {
       duracion_dias,
       acceso_gimnasio,
       acceso_entrenador,
-      acceso_asistente_virtual,
       estado
     });
 
@@ -52,7 +51,6 @@ exports.editar = async (req, res) => {
       duracion_dias,
       acceso_gimnasio,
       acceso_entrenador,
-      acceso_asistente_virtual,
       estado
     } = req.body;
 
@@ -62,7 +60,6 @@ exports.editar = async (req, res) => {
       duracion_dias,
       acceso_gimnasio,
       acceso_entrenador,
-      acceso_asistente_virtual,
       estado
     }, {
       where: { id: id }
@@ -87,7 +84,7 @@ exports.eliminar = async (req, res) => {
     const { id } = req.query;
 
     await PlanMembresia.destroy({
-      where: { id: id }
+      where: { id_plan: id }
     }).then(data => {
       res.json({ msj: 'Registro eliminado', data });
     }).catch(er => {

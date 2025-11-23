@@ -45,9 +45,6 @@ const modeloPlan = require("../../models/pagos/plan_membresia");
  *                   acceso_entrenador:
  *                     type: boolean
  *                     description: Si incluye entrenador
- *                   acceso_asistente_virtual:
- *                     type: boolean
- *                     description: Si incluye asistente virtual
  *                   estado:
  *                     type: string
  *                     enum: ['Activa', 'Inactiva']
@@ -87,9 +84,6 @@ routes.get('/listar', controladorPlan.listar);
  *               acceso_entrenador:
  *                 type: boolean
  *                 description: Acceso a entrenador
- *               acceso_asistente_virtual:
- *                 type: boolean
- *                 description: Acceso a asistente virtual
  *               estado:
  *                 type: string
  *                 enum: ['Activa', 'Inactiva']
@@ -137,8 +131,6 @@ routes.post('/guardar',
  *               acceso_gimnasio:
  *                 type: boolean
  *               acceso_entrenador:
- *                 type: boolean
- *               acceso_asistente_virtual:
  *                 type: boolean
  *               estado:
  *                 type: string
