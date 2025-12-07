@@ -168,6 +168,51 @@ router.post(
   controladorUsuario.guardarUsuario
 );
 
+// Registro público de clientes (sin autenticación, rol fijo cliente)
+router.post(
+  "/registro-publico",
+  [
+    body("email").isEmail().withMessage("El email no es válido"),
+    body("username")
+      .notEmpty()
+      .withMessage("El nombre de usuario es obligatorio"),
+    body("password")
+      .isLength({ min: 8 })
+      .withMessage("La contraseña debe tener al menos 8 caracteres"),
+    body("telefono")
+      .optional()
+      .isNumeric()
+      .withMessage("El teléfono debe ser numérico"),
+    body("fecha_nacimiento")
+      .optional()
+      .isDate()
+      .withMessage("La fecha de nacimiento no es válida"),
+    body("genero")
+      .optional()
+      .isIn(["M", "F", "Otros"])
+      .withMessage("El género no es válido"),
+    body("cliente")
+      .exists()
+      .withMessage("El objeto 'cliente' es obligatorio")
+      .bail()
+      .isObject()
+      .withMessage("El cliente debe de ser un objeto"),
+    body("cliente.nombre")
+      .notEmpty()
+      .withMessage("El nombre del cliente es obligatorio"),
+    body("cliente.apellido")
+      .notEmpty()
+      .withMessage("El apellido del cliente es obligatorio"),
+  ],
+  manejarValidaciones,
+  (req, res, next) => {
+    // Forzar rol de cliente (por ejemplo id_rol = 2)
+    req.body.id_rol = req.body.id_rol || 2;
+    next();
+  },
+  controladorUsuario.guardarUsuario
+);
+
 /**
  * @swagger
  * /usuario/actualizar:
