@@ -280,7 +280,7 @@ exports.listarAsistenciasPorDia = async (req, res) => {
     const asistenciasPorDia = await Asistencia.findAll({
       attributes: [
         [fn("DATE", col("fecha_entrada")), "fecha"],
-        [fn("COUNT", col("id_asistencia")), "total_asistencias"],
+        [fn("COUNT", col("id")), "total_asistencias"],
         [fn("COUNT", fn("DISTINCT", col("id_usuario"))), "usuarios_unicos"],
       ],
       where: whereClause,
@@ -296,6 +296,66 @@ exports.listarAsistenciasPorDia = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       error: "Error al listar asistencias por día: " + error.message,
+    });
+  }
+};
+
+/**
+ * Listar asistencias para panel de administración (filtros opcionales por usuario y fecha)
+ */
+exports.listarAsistenciasAdmin = async (req, res) => {
+  const errores = validationResult(req);
+  if (!errores.isEmpty()) {
+    return res.status(400).json({ errores: errores.array() });
+  }
+
+  try {
+    const { id_usuario, desde, hasta } = req.query;
+
+    const whereClause = {};
+
+    if (id_usuario) {
+      whereClause.id_usuario = id_usuario;
+    }
+
+    if (desde || hasta) {
+      whereClause.fecha_entrada = {};
+      if (desde) {
+        whereClause.fecha_entrada[Op.gte] = new Date(desde);
+      }
+      if (hasta) {
+        const hastaDate = new Date(hasta);
+        hastaDate.setHours(23, 59, 59, 999);
+        whereClause.fecha_entrada[Op.lte] = hastaDate;
+      }
+    }
+
+    const asistencias = await Asistencia.findAll({
+      where: whereClause,
+      include: [
+        {
+          model: Usuario,
+          attributes: ["id_usuario", "username", "email"],
+          include: [
+            {
+              model: Cliente,
+              attributes: ["nombre", "apellido"],
+            },
+          ],
+        },
+        {
+          model: CodigoQrAcceso,
+          attributes: ["codigo_qr", "tipo_codigo"],
+        },
+      ],
+      order: [["fecha_entrada", "DESC"]],
+    });
+
+    return res.status(200).json({ total: asistencias.length, asistencias });
+  } catch (error) {
+    return res.status(500).json({
+      error:
+        "Error al listar asistencias para administración: " + error.message,
     });
   }
 };

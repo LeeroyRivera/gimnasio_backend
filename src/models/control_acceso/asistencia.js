@@ -4,7 +4,7 @@ const sequelize = require("../../config/database");
 const Asistencia = sequelize.define(
   "Asistencia",
   {
-    id_asistencia: {
+    id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,

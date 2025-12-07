@@ -278,6 +278,60 @@ router.get(
   controlador.listarAsistenciasPorDia
 );
 
+/**
+ * @swagger
+ * /control-acceso/asistencia:
+ *   get:
+ *     summary: Listar asistencias con filtros opcionales
+ *     description: Permite filtrar asistencias por fecha y por usuario. Uso pensado para panel de administración.
+ *     tags: [Asistencias]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id_usuario
+ *         schema:
+ *           type: integer
+ *         description: ID del usuario a filtrar (opcional)
+ *       - in: query
+ *         name: desde
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha inicial (YYYY-MM-DD)
+ *       - in: query
+ *         name: hasta
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Fecha final (YYYY-MM-DD)
+ *     responses:
+ *       200:
+ *         description: Lista de asistencias
+ *       400:
+ *         description: Error de validación
+ *       500:
+ *         description: Error del servidor
+ */
+router.get(
+  "/",
+  [
+    query("id_usuario")
+      .optional()
+      .isInt()
+      .withMessage("'id_usuario' debe ser un número entero"),
+    query("desde")
+      .optional()
+      .isDate()
+      .withMessage("'desde' debe ser una fecha válida"),
+    query("hasta")
+      .optional()
+      .isDate()
+      .withMessage("'hasta' debe ser una fecha válida"),
+  ],
+  controlador.listarAsistenciasAdmin
+);
+
 // Asistencias del usuario autenticado
 router.get(
   "/mi-asistencia",

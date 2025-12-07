@@ -7,6 +7,8 @@ const {
 } = require("../../services/usuarios/notificarRegistro");
 const sequelize = require("../../config/database");
 
+const { Op } = require("sequelize");
+
 exports.listarTodosUsuarios = async (req, res) => {
   try {
     const usuarios = await Usuario.findAll({ include: Cliente });
@@ -45,6 +47,52 @@ exports.obtenerUsuariosActivos = async (req, res) => {
     res
       .status(500)
       .json({ error: "Error al obtener usuarios activos" + error });
+  }
+};
+
+// Búsqueda rápida para autocompletar por username, nombre o apellido
+exports.buscarUsuarios = async (req, res) => {
+  const { term } = req.query;
+
+  if (!term || term.trim().length < 2) {
+    return res
+      .status(400)
+      .json({
+        error: "El término de búsqueda debe tener al menos 2 caracteres",
+      });
+  }
+
+  try {
+    const likeTerm = `%${term.trim()}%`;
+
+    const usuarios = await Usuario.findAll({
+      where: {
+        [Op.or]: [
+          { username: { [Op.like]: likeTerm } },
+          { email: { [Op.like]: likeTerm } },
+        ],
+      },
+      include: [
+        {
+          model: Cliente,
+          where: {
+            [Op.or]: [
+              { nombre: { [Op.like]: likeTerm } },
+              { apellido: { [Op.like]: likeTerm } },
+            ],
+          },
+          required: false,
+        },
+      ],
+      limit: 10,
+      order: [["username", "ASC"]],
+    });
+
+    return res.status(200).json(usuarios);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Error al buscar usuarios: " + error.message });
   }
 };
 

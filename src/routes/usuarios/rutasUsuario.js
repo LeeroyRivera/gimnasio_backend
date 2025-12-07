@@ -51,6 +51,13 @@ router.get(
   controladorUsuario.obtenerUsuariosActivos
 );
 
+// Búsqueda rápida para autocompletar usuarios por username, email o nombre
+router.get(
+  "/buscar",
+  passport.authenticate("jwt", { session: false }),
+  controladorUsuario.buscarUsuarios
+);
+
 /**
  * @swagger
  * /usuario/registro:

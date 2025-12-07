@@ -4,7 +4,9 @@ const { Op } = require("sequelize");
 
 exports.listarTodos = async (req, res) => {
   try {
-    const codigos = await CodigoQrAcceso.findAll();
+    const codigos = await CodigoQrAcceso.findAll({
+      order: [["fecha_Generacion", "DESC"]],
+    });
     return res.status(200).json(codigos);
   } catch (error) {
     return res
