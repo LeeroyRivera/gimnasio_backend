@@ -299,3 +299,25 @@ exports.listarAsistenciasPorDia = async (req, res) => {
     });
   }
 };
+
+// Listar asistencias del usuario autenticado
+exports.listarAsistenciasUsuarioAutenticado = async (req, res) => {
+  try {
+    const idUsuario = req.user?.id;
+    if (!idUsuario) {
+      return res.status(401).json({ error: "Usuario no autenticado" });
+    }
+
+    const asistencias = await Asistencia.findAll({
+      where: { id_usuario: idUsuario },
+      order: [["fecha_entrada", "DESC"]],
+    });
+
+    return res.status(200).json(asistencias);
+  } catch (error) {
+    return res.status(500).json({
+      error:
+        "Error al listar asistencias del usuario autenticado: " + error.message,
+    });
+  }
+};

@@ -7,7 +7,9 @@ const db = require("./src/config/database");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./src/config/swagger");
 const passport = require("./src/config/passport");
-const { generarAutomatico } = require("./src/controllers/control_acceso/controladorCodigoQR");
+const {
+  generarAutomatico,
+} = require("./src/controllers/control_acceso/controladorCodigoQR");
 const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
@@ -35,7 +37,7 @@ require("./src/config/relaciones")();
 
 const app = express();
 
-db.sync()
+db.sync({ alter: true })
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
     generarAutomatico();
@@ -45,10 +47,12 @@ db.sync()
   });
 
 // Configurar CORS
-app.use(cors({
-  origin: 'http://localhost:5173', // URL del frontend
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173", // URL del frontend
+    credentials: true,
+  })
+);
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -131,7 +135,6 @@ app.use(
 app.use(
   "/api/control-acceso/asistencia",
   passport.authenticate("jwt", { session: false }),
-  autenticacionRol("admin"),
   require("./src/routes/control_acceso/rutaAsistencia")
 );
 module.exports = app;

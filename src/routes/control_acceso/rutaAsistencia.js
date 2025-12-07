@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const controlador = require("../../controllers/control_acceso/controladorAsistencia");
 const { body, param, query } = require("express-validator");
+const passport = require("passport");
 
 /**
  * @swagger
@@ -275,6 +276,13 @@ router.get(
       .withMessage("'hasta' debe ser una fecha válida"),
   ],
   controlador.listarAsistenciasPorDia
+);
+
+// Asistencias del usuario autenticado
+router.get(
+  "/mi-asistencia",
+  passport.authenticate("jwt", { session: false }),
+  controlador.listarAsistenciasUsuarioAutenticado
 );
 
 module.exports = router;

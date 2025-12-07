@@ -1,8 +1,9 @@
-const express = require('express');
+const express = require("express");
 const routes = express.Router();
-const controladorPago = require('../../controladores/pagos/controladorPago');
+const controladorPago = require("../../controladores/pagos/controladorPago");
 const { body, query } = require("express-validator");
 const modeloPago = require("../../models/pagos/pago");
+const passport = require("passport");
 
 /**
  * @swagger
@@ -118,7 +119,14 @@ const modeloPago = require("../../models/pagos/pago");
  *                             type: integer
  *                             example: 30
  */
-routes.get('/listar', controladorPago.listar);
+routes.get("/listar", controladorPago.listar);
+
+// Pagos del cliente autenticado
+routes.get(
+  "/mis-pagos",
+  passport.authenticate("jwt", { session: false }),
+  controladorPago.listarPorUsuarioAutenticado
+);
 
 /**
  * @swagger
@@ -148,11 +156,17 @@ routes.get('/listar', controladorPago.listar);
  *       400:
  *         description: Error en los datos enviados
  */
-routes.post('/guardar',
+routes.post(
+  "/guardar",
   controladorPago.validarComprobanteGuardar,
   [
-    body("id_membresia").notEmpty().isInt().withMessage("Debe enviar el id de la membresía"),
-    body("metodo_pago").isIn(['Efectivo','Transferencia','Tarjeta']).withMessage("Método de pago inválido")
+    body("id_membresia")
+      .notEmpty()
+      .isInt()
+      .withMessage("Debe enviar el id de la membresía"),
+    body("metodo_pago")
+      .isIn(["Efectivo", "Transferencia", "Tarjeta"])
+      .withMessage("Método de pago inválido"),
   ],
   controladorPago.guardar
 );
@@ -184,13 +198,17 @@ routes.post('/guardar',
  *       200:
  *         description: Pago actualizado correctamente
  */
-routes.put('/editar',
+routes.put(
+  "/editar",
   query("id").isInt().withMessage("El id debe ser entero"),
   query("id").custom(async (value) => {
     const buscar = await modeloPago.findOne({ where: { id: value } });
     if (!buscar) throw new Error("El pago no existe");
   }),
-  body("metodo_pago").optional().isIn(['Efectivo','Transferencia','Tarjeta']).withMessage("Método inválido"),
+  body("metodo_pago")
+    .optional()
+    .isIn(["Efectivo", "Transferencia", "Tarjeta"])
+    .withMessage("Método inválido"),
   controladorPago.editar
 );
 
@@ -210,7 +228,8 @@ routes.put('/editar',
  *       200:
  *         description: Pago eliminado correctamente
  */
-routes.delete('/eliminar',
+routes.delete(
+  "/eliminar",
   query("id").isInt().withMessage("El id debe ser entero"),
   controladorPago.eliminar
 );
@@ -243,7 +262,8 @@ routes.delete('/eliminar',
  *       200:
  *         description: Comprobante actualizado correctamente
  */
-routes.post('/comprobante',
+routes.post(
+  "/comprobante",
   query("id").isInt().withMessage("Debe enviar ID del pago"),
   controladorPago.validarComprobanteActualizar,
   controladorPago.actualizarComprobantePago
