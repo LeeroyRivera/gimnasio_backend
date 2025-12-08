@@ -8,8 +8,6 @@ function ensureDir(dirPath) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
 }
-const multer = require("multer");
-const path = require("path");
 
 const diskStorageequipos = multer.diskStorage({
   destination: (req, file, cb) => {
