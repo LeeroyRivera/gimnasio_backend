@@ -50,7 +50,7 @@ db.sync()
 // Configurar CORS - Permitir ambos puertos del frontend
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: "http://localhost:5173", // URL del frontend
     credentials: true,
   })
 );
