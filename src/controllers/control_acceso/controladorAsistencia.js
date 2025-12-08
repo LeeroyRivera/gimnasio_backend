@@ -17,7 +17,7 @@ exports.registrarAsistenciaQR = async (req, res) => {
   }
 
   try {
-    const { id_usuario, codigo_qr } = req.body;
+    const { id_usuario, codigo_qr, origen } = req.body;
 
     // Verificar que el usuario existe
     const usuario = await Usuario.findByPk(id_usuario);
@@ -77,7 +77,8 @@ exports.registrarAsistenciaQR = async (req, res) => {
         id_usuario,
         id_codigo_qr: codigoQR.id_codigo_qr,
         fecha_entrada: ahora,
-        tipo_acceso: "QR",
+        // Si viene desde el módulo de Validar acceso (admin), marcar como Manual
+        tipo_acceso: origen === "admin-manual" ? "Manual" : "QR",
         estado_acceso: "Permitido",
       });
 

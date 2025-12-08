@@ -49,7 +49,7 @@ db.sync({ alter: true })
 // Configurar CORS
 app.use(
   cors({
-    origin: "http://localhost:5173", // URL del frontend
+    origin: true, // URL del frontend
     credentials: true,
   })
 );
