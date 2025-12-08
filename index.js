@@ -37,7 +37,8 @@ require("./src/config/relaciones")();
 
 const app = express();
 
-db.sync({ alter: true })
+// Usar sync() sin alter para evitar deadlocks y conflictos
+db.sync()
   .then(() => {
     console.log("Conexion a la base de datos exitosa");
     generarAutomatico();
@@ -46,10 +47,10 @@ db.sync({ alter: true })
     console.error("Error al conectar a la base de datos:", error);
   });
 
-// Configurar CORS
+// Configurar CORS - Permitir ambos puertos del frontend
 app.use(
   cors({
-    origin: "http://localhost:5173", // URL del frontend
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
