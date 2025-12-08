@@ -62,6 +62,7 @@ db.sync()
         id_rol: rolAdmin.id_rol,
         username: "admin",
         password: "admin",
+        email: "admin@example.com",
         estado: "activo",
       });
       console.log("Usuario 'admin' creado con contraseña 'admin'");
