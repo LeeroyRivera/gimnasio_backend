@@ -50,7 +50,7 @@ db.sync()
 // Configurar CORS - Permitir ambos puertos del frontend
 app.use(
   cors({
-    origin: "https://leeroyrivera.site:8080", // URL del frontend
+    origin: "https://leeroyrivera.site", // URL del frontend
     credentials: true,
   })
 );
