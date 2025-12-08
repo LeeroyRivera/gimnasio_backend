@@ -117,7 +117,15 @@ router.post("/login", validacionesLogin, async (req, res) => {
       access_token: token,
     });
 
-    return res.json({ token });
+    // devolver también información básica del usuario para el frontend
+    return res.json({
+      token,
+      user: {
+        id_usuario: usuario.id_usuario,
+        username: usuario.username,
+        rol: rol.nombre,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ mensaje: "Error en el servidor" + error });
   }
