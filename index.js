@@ -13,8 +13,8 @@ const {
 const { autenticacionRol } = require("./src/middleware/autenticacionRol");
 
 // Importar modelos de usuarios
-require("./src/models/usuarios/rol");
-require("./src/models/usuarios/usuario");
+const Rol = require("./src/models/usuarios/rol");
+const Usuario = require("./src/models/usuarios/usuario");
 require("./src/models/usuarios/cliente");
 require("./src/models/usuarios/sesion");
 
@@ -39,8 +39,34 @@ const app = express();
 
 // Usar sync() sin alter para evitar deadlocks y conflictos
 db.sync()
-  .then(() => {
+  .then(async () => {
     console.log("Conexion a la base de datos exitosa");
+
+    // Inicializar rol y usuario admin si no existen usuarios
+    const totalUsuarios = await Usuario.count();
+    if (totalUsuarios === 0) {
+      console.log(
+        "No existen usuarios. Creando rol y usuario admin por defecto..."
+      );
+
+      let rolAdmin = await Rol.findOne({ where: { nombre: "admin" } });
+      if (!rolAdmin) {
+        rolAdmin = await Rol.create({
+          nombre: "admin",
+          descripcion: "Administrador del sistema",
+        });
+        console.log("Rol 'admin' creado");
+      }
+
+      await Usuario.create({
+        id_rol: rolAdmin.id_rol,
+        username: "admin",
+        password: "admin",
+        estado: "activo",
+      });
+      console.log("Usuario 'admin' creado con contraseña 'admin'");
+    }
+
     generarAutomatico();
   })
   .catch((error) => {
