@@ -63,7 +63,7 @@ exports.obtenerResumenHoy = async (req, res) => {
     // Clientes asistidos por tipo de membresía (planes) durante el día
     // Usamos las asociaciones con alias definidos en relaciones.js
     const asistenciasPorMembresia = await Membresia.findAll({
-      attributes: [[fn("COUNT", col("Membresia.id_membresia")), "total"]],
+      attributes: [[fn("COUNT", col("Membresia.id_cliente")), "total"]],
       include: [
         {
           model: Cliente,

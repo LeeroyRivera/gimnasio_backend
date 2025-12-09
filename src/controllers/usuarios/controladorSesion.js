@@ -1,4 +1,5 @@
 const sesion = require("../../models/usuarios/sesion");
+const Usuario = require("../../models/usuarios/usuario");
 const { validationResult } = require("express-validator");
 const { fn, col, Op } = require("sequelize");
 
@@ -10,7 +11,15 @@ exports.listarSesionesPorUsuario = async (req, res) => {
   }
 
   try {
-    const sesiones = await sesion.findAll({ where: { id_usuario } });
+    const sesiones = await sesion.findAll({
+      where: { id_usuario },
+      include: [
+        {
+          model: Usuario,
+          attributes: ["username"],
+        },
+      ],
+    });
     res.status(200).json(sesiones);
   } catch (error) {
     res.status(500).json({ error: "Error al listar sesiones" + error });
@@ -20,7 +29,14 @@ exports.listarSesionesPorUsuario = async (req, res) => {
 // Listar todas las sesiones sin filtro de usuario
 exports.listarTodasLasSesiones = async (req, res) => {
   try {
-    const sesionesTodas = await sesion.findAll();
+    const sesionesTodas = await sesion.findAll({
+      include: [
+        {
+          model: Usuario,
+          attributes: ["username"],
+        },
+      ],
+    });
     return res.status(200).json(sesionesTodas);
   } catch (error) {
     return res
