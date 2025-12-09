@@ -3,6 +3,7 @@ const Asistencia = require("../../models/control_acceso/asistencia");
 const Membresia = require("../../models/pagos/membresia");
 const PlanMembresia = require("../../models/pagos/plan_membresia");
 const Cliente = require("../../models/usuarios/cliente");
+const Usuario = require("../../models/usuarios/usuario");
 
 // GET /api/dashboard/admin/hoy
 exports.obtenerResumenHoy = async (req, res) => {
@@ -60,7 +61,7 @@ exports.obtenerResumenHoy = async (req, res) => {
       : 0;
 
     // Clientes asistidos por tipo de membresía (planes) durante el día
-    // Usamos las asociaciones: Membresia -> Cliente -> Usuario -> Asistencia -> PlanMembresia (como plan)
+    // Usamos las asociaciones con alias definidos en relaciones.js
     const asistenciasPorMembresia = await Membresia.findAll({
       attributes: [[fn("COUNT", col("Membresia.id_membresia")), "total"]],
       include: [
@@ -70,7 +71,8 @@ exports.obtenerResumenHoy = async (req, res) => {
           attributes: [],
           include: [
             {
-              model: require("../../models/usuarios/usuario"),
+              model: Usuario,
+              as: "usuario",
               attributes: [],
               include: [
                 {
