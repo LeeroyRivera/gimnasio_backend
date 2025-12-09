@@ -60,39 +60,38 @@ exports.obtenerResumenHoy = async (req, res) => {
       : 0;
 
     // Clientes asistidos por tipo de membresía (planes) durante el día
-    // Unimos Asistencia -> Cliente (por id_usuario) -> Membresia -> PlanMembresia
-    const asistenciasPorMembresia = await Asistencia.findAll({
-      attributes: [
-        [fn("COUNT", col("Asistencia.id")), "total"],
-        [col("PlanMembresia.nombre_plan"), "plan"],
-      ],
+    // Usamos las asociaciones: Membresia -> Cliente -> Usuario -> Asistencia -> PlanMembresia (como plan)
+    const asistenciasPorMembresia = await Membresia.findAll({
+      attributes: [[fn("COUNT", col("Membresia.id_membresia")), "total"]],
       include: [
         {
           model: Cliente,
-          required: true,
+          as: "cliente",
           attributes: [],
-          where: { id_usuario: col("Asistencia.id_usuario") },
           include: [
             {
-              model: Membresia,
-              required: true,
+              model: require("../../models/usuarios/usuario"),
               attributes: [],
               include: [
                 {
-                  model: PlanMembresia,
-                  required: true,
+                  model: Asistencia,
                   attributes: [],
+                  where: {
+                    fecha_entrada: { [Op.between]: [inicioDia, finDia] },
+                    estado_acceso: "Permitido",
+                  },
                 },
               ],
             },
           ],
         },
+        {
+          model: PlanMembresia,
+          as: "plan",
+          attributes: ["nombre_plan"],
+        },
       ],
-      where: {
-        fecha_entrada: { [Op.between]: [inicioDia, finDia] },
-        estado_acceso: "Permitido",
-      },
-      group: [col("PlanMembresia.nombre_plan")],
+      group: [col("plan.nombre_plan")],
       raw: true,
     });
 
@@ -102,17 +101,15 @@ exports.obtenerResumenHoy = async (req, res) => {
       asistenciasActivasAhora,
       promedioDuracionMinutosHoy,
       porMembresiaHoy: asistenciasPorMembresia.map((r) => ({
-        plan: r.plan,
+        plan: r["plan.nombre_plan"] || "Sin plan",
         total: Number(r.total),
       })),
     });
   } catch (error) {
     console.error("Error en obtenerResumenHoy:", error);
-    return res
-      .status(500)
-      .json({
-        mensaje: "Error al obtener resumen del día",
-        error: error.message,
-      });
+    return res.status(500).json({
+      mensaje: "Error al obtener resumen del día",
+      error: error.message,
+    });
   }
 };
