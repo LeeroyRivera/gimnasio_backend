@@ -81,7 +81,8 @@ exports.obtenerResumenHoy = async (req, res) => {
           include: [
             {
               model: Cliente,
-              as: "usuario",
+              // alias correcto según relaciones: Cliente.belongsTo(Usuario, { as: "Cliente" })
+              as: "Cliente",
               attributes: [],
               include: [
                 {
