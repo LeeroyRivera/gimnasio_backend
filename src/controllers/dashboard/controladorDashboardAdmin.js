@@ -61,15 +61,9 @@ exports.obtenerResumenHoy = async (req, res) => {
       : 0;
 
     // Asistencias de hoy agrupadas por plan de membresía
-    // Contamos registros de Asistencia (no clientes únicos) por tipo de plan
-    // Asistencias de hoy agrupadas por plan de membresía (contando registros de asistencia)
-    // Cadena de relaciones usada:
-    // Asistencia -> Usuario (id_usuario)
-    // Usuario -> Cliente (Usuario.hasOne(Cliente), Cliente.belongsTo(Usuario, as: 'usuario'))
-    // Cliente -> Membresia (Cliente.hasMany(Membresia), Membresia.belongsTo(Cliente, as: 'cliente'))
-    // Membresia -> PlanMembresia (as: 'plan')
-    const asistenciasPorMembresia = await Asistencia.findAll({
-      attributes: [[fn("COUNT", col("Asistencia.id")), "total"]],
+    // Estrategia simplificada: obtenemos todas las asistencias de hoy con sus usuarios
+    // y luego buscamos sus planes de membresía
+    const asistenciasHoy = await Asistencia.findAll({
       where: {
         fecha_entrada: { [Op.between]: [inicioDia, finDia] },
         estado_acceso: "Permitido",
@@ -77,41 +71,55 @@ exports.obtenerResumenHoy = async (req, res) => {
       include: [
         {
           model: Usuario,
-          attributes: [],
+          attributes: ["id_usuario"],
           include: [
             {
               model: Cliente,
-              attributes: [],
-              include: [
-                {
-                  model: Membresia,
-                  attributes: [],
-                  include: [
-                    {
-                      model: PlanMembresia,
-                      as: "plan",
-                      attributes: ["nombre_plan"],
-                    },
-                  ],
-                },
-              ],
+              attributes: ["id_cliente"],
             },
           ],
         },
       ],
-      group: [literal("plan.nombre_plan")],
-      raw: true,
     });
+
+    // Agrupar manualmente por plan de membresía
+    const contadorPorPlan = {};
+
+    for (const asistencia of asistenciasHoy) {
+      if (asistencia.Usuario?.Cliente?.id_cliente) {
+        // Buscar la membresía activa del cliente
+        const membresia = await Membresia.findOne({
+          where: {
+            id_cliente: asistencia.Usuario.Cliente.id_cliente,
+            estado: "Activa",
+          },
+          include: [
+            {
+              model: PlanMembresia,
+              as: "plan",
+              attributes: ["nombre_plan"],
+            },
+          ],
+        });
+
+        const nombrePlan = membresia?.plan?.nombre_plan || "Sin plan";
+        contadorPorPlan[nombrePlan] = (contadorPorPlan[nombrePlan] || 0) + 1;
+      }
+    }
+
+    const porMembresiaHoy = Object.entries(contadorPorPlan).map(
+      ([plan, total]) => ({
+        plan,
+        total,
+      })
+    );
 
     return res.json({
       fecha: inicioDia.toISOString().slice(0, 10),
       asistenciasTotalesHoy,
       asistenciasActivasAhora,
       promedioDuracionMinutosHoy,
-      porMembresiaHoy: asistenciasPorMembresia.map((r) => ({
-        plan: r["plan.nombre_plan"] || "Sin plan",
-        total: Number(r.total),
-      })),
+      porMembresiaHoy,
     });
   } catch (error) {
     console.error("Error en obtenerResumenHoy:", error);
