@@ -99,7 +99,7 @@ exports.obtenerResumenHoy = async (req, res) => {
           ],
         },
       ],
-      group: [col("planes_membresia.nombre_plan")],
+      group: [literal("plan.nombre_plan")],
       raw: true,
     });
 
