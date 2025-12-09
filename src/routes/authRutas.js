@@ -111,10 +111,21 @@ router.post("/login", validacionesLogin, async (req, res) => {
       }
     );
 
-    // guardar sesión
+    // obtener IP real y dispositivo
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+      req.ip ||
+      req.connection?.remoteAddress ||
+      "desconocida";
+
+    const dispositivo = req.headers["user-agent"] || "desconocido";
+
+    // guardar sesión con metadatos
     await Sesion.create({
       id_usuario: usuario.id_usuario,
       access_token: token,
+      ip,
+      dispositivo,
     });
 
     // devolver también información básica del usuario para el frontend

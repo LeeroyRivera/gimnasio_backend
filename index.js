@@ -165,4 +165,9 @@ app.use(
   passport.authenticate("jwt", { session: false }),
   require("./src/routes/control_acceso/rutaAsistencia")
 );
+app.use(
+  "/api/dashboard",
+  passport.authenticate("jwt", { session: false }),
+  require("./src/routes/dashboard/rutaDashboardAdmin")
+);
 module.exports = app;
