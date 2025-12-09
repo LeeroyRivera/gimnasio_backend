@@ -80,16 +80,16 @@ exports.obtenerResumenHoy = async (req, res) => {
           attributes: [],
           include: [
             {
-              model: Cliente, // sin alias
+              model: Cliente,
               attributes: [],
               include: [
                 {
-                  model: Membresia, // sin alias aquí
+                  model: Membresia,
                   attributes: [],
                   include: [
                     {
                       model: PlanMembresia,
-                      as: "plan", // único alias usado, definido en relaciones.js
+                      as: "plan",
                       attributes: ["nombre_plan"],
                     },
                   ],
@@ -99,7 +99,7 @@ exports.obtenerResumenHoy = async (req, res) => {
           ],
         },
       ],
-      group: [col("plan.nombre_plan")],
+      group: [col("planes_membresia.nombre_plan")],
       raw: true,
     });
 
