@@ -60,39 +60,45 @@ exports.obtenerResumenHoy = async (req, res) => {
       ? Number(Number(promedioDuracion.promedio).toFixed(2))
       : 0;
 
-    // Clientes asistidos por tipo de membresía (planes) durante el día
-    // Solo se cuentan clientes que tuvieron al menos una asistencia ese día
-    const asistenciasPorMembresia = await Membresia.findAll({
-      attributes: [
-        [fn("COUNT", fn("DISTINCT", col("cliente.id_cliente"))), "total"],
-      ],
+    // Asistencias de hoy agrupadas por plan de membresía
+    // Contamos registros de Asistencia (no clientes únicos) por tipo de plan
+    // Asistencias de hoy agrupadas por plan de membresía (contando registros de asistencia)
+    // Cadena de relaciones usada:
+    // Asistencia -> Usuario (id_usuario)
+    // Usuario -> Cliente (Usuario.hasOne(Cliente), Cliente.belongsTo(Usuario, as: 'usuario'))
+    // Cliente -> Membresia (Cliente.hasMany(Membresia), Membresia.belongsTo(Cliente, as: 'cliente'))
+    // Membresia -> PlanMembresia (as: 'plan')
+    const asistenciasPorMembresia = await Asistencia.findAll({
+      attributes: [[fn("COUNT", col("Asistencia.id")), "total"]],
+      where: {
+        fecha_entrada: { [Op.between]: [inicioDia, finDia] },
+        estado_acceso: "Permitido",
+      },
       include: [
         {
-          model: Cliente,
-          as: "cliente",
+          model: Usuario,
           attributes: [],
           include: [
             {
-              model: Usuario,
+              model: Cliente,
               as: "usuario",
               attributes: [],
               include: [
                 {
-                  model: Asistencia,
+                  model: Membresia,
+                  as: "cliente",
                   attributes: [],
-                  where: {
-                    fecha_entrada: { [Op.between]: [inicioDia, finDia] },
-                    estado_acceso: "Permitido",
-                  },
+                  include: [
+                    {
+                      model: PlanMembresia,
+                      as: "plan",
+                      attributes: ["nombre_plan"],
+                    },
+                  ],
                 },
               ],
             },
           ],
-        },
-        {
-          model: PlanMembresia,
-          as: "plan",
-          attributes: ["nombre_plan"],
         },
       ],
       group: [col("plan.nombre_plan")],
