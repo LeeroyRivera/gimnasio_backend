@@ -45,8 +45,7 @@ const enviarCorreoResend = async (destinatarios, asunto, cuerpoHTML) => {
       throw error;
     }
 
-    const from =
-      process.env.EMAIL_FROM || "Sistema Gimnasio <onboarding@resend.dev>";
+    const from = process.env.EMAIL_FROM;
 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
