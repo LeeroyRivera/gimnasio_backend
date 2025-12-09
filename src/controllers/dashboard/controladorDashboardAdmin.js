@@ -80,19 +80,16 @@ exports.obtenerResumenHoy = async (req, res) => {
           attributes: [],
           include: [
             {
-              model: Cliente,
-              // desde Usuario hacia Cliente no se usa alias
+              model: Cliente, // sin alias
               attributes: [],
               include: [
                 {
-                  model: Membresia,
-                  // alias correcto según relaciones: Membresia.belongsTo(Cliente, { as: "cliente" })
-                  as: "cliente",
+                  model: Membresia, // sin alias aquí
                   attributes: [],
                   include: [
                     {
                       model: PlanMembresia,
-                      as: "plan",
+                      as: "plan", // único alias usado, definido en relaciones.js
                       attributes: ["nombre_plan"],
                     },
                   ],
