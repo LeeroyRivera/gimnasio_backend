@@ -70,4 +70,7 @@ router.get(
     .withMessage("'hasta' debe ser fecha válida"),
   controladorSesion.listarSesionesPorDia
 );
+
+// Listar todas las sesiones sin filtro de usuario
+router.get("/sesiones-todas", controladorSesion.listarTodasLasSesiones);
 module.exports = router;

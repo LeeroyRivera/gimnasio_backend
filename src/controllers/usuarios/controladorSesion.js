@@ -17,6 +17,18 @@ exports.listarSesionesPorUsuario = async (req, res) => {
   }
 };
 
+// Listar todas las sesiones sin filtro de usuario
+exports.listarTodasLasSesiones = async (req, res) => {
+  try {
+    const sesionesTodas = await sesion.findAll();
+    return res.status(200).json(sesionesTodas);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: "Error al listar todas las sesiones: " + error });
+  }
+};
+
 exports.listarSesionesPorDia = async (req, res) => {
   const { desde, hasta } = req.query;
 
